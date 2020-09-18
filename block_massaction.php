@@ -210,6 +210,8 @@ class block_massaction extends block_base {
      * @return string The html for this section.
      */
     private function get_action_section() {
+        global $CFG;
+
         $actiontext = html_writer::start_tag('div', array('class' => 'block-massaction-action'));
         $actiontext .= html_writer::start_tag('ul');
         $actiontext .= html_writer::start_tag('li');
@@ -220,10 +222,17 @@ class block_massaction extends block_base {
         $actionicons = array(
             'outdent' => 't/left',
             'indent'  => 't/right',
-            'hide'    => 't/show',
+            'hide1'    => 't/show',
             'show'    => 't/hide',
             'delete'  => 't/delete'
         );
+
+        if (!empty($CFG->allowstealth)) { // Insert option to create stealth activity.
+            $fill = array('hide2' => 't/block');
+            $pre = array_slice($actionicons, 0, 3, true);
+            $post = array_slice($actionicons, 3, null, true);
+            $actionicons = $pre + $fill + $post;
+        }
 
         foreach ($actionicons as $action => $iconpath) {
             $actiontext .= $this->get_item_content('a', 'action_' . $action,

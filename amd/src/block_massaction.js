@@ -47,7 +47,10 @@ define(['jquery', 'core/str'], function($, corestr) {
             $('#block-massaction-outdent').on('click', this.data, this.actionHandler);
             $('#block-massaction-indent').on('click', this.data, this.actionHandler);
 
-            $('#block-massaction-hide').on('click', this.data, this.actionHandler);
+            $('#block-massaction-hide1').on('click', this.data, this.actionHandler);
+            if ($('#block-massaction-hide2').length) {
+                $('#block-massaction-hide2').on('click', this.data, this.actionHandler);
+            }
             $('#block-massaction-show').on('click', this.data, this.actionHandler);
 
             $('#block-massaction-delete').on('click', this.data, this.actionHandler);
