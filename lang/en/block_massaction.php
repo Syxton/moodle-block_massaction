@@ -37,7 +37,8 @@ $string['withselected'] = 'With selected';
 
 $string['action_outdent'] = 'Outdent (move left)';
 $string['action_indent'] = 'Indent (move right)';
-$string['action_hide'] = 'Hide';
+$string['action_hide1'] = 'Hide';
+$string['action_hide2'] = 'Hide & Make Available';
 $string['action_show'] = 'Show';
 $string['action_delete'] = 'Delete';
 $string['action_move'] = 'Move to section';
