@@ -1,0 +1,73 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_massaction/block_massaction
+}}
+<div id="block-massaction" class="block-massaction" aria-label ="{{#str}} pluginname, block_massaction {{/str}}"
+        name="{{#str}} pluginname, block_massaction {{/str}}">
+
+    {{! Only display, if there are any actions available or if we at least can move items }}
+    {{#actions.0.action}}
+        <a id="block-massaction-control-selectall" href="javascript:void(0);">
+            {{#str}} selectall, block_massaction {{/str}}
+        </a>
+        <br/>
+        <div>
+            <form>
+                {{> block_massaction/section_select}}
+                {{{sectionselecthelpicon}}}
+            </form>
+        </div>
+        <a id="block-massaction-control-deselectall" href="javascript:void(0);">
+            {{#str}} deselectall, block_massaction {{/str}}
+        </a><br/><br/>
+
+        {{#str}} withselected, block_massaction {{/str}}:
+    {{/actions.0.action}}
+
+    {{^actions}}
+        {{^show_moveto_select}}
+            {{#str}} noactionsavailable, block_massaction {{/str}}
+        {{/show_moveto_select}}
+    {{/actions}}
+
+    <div class="block-massaction-action">
+        {{#actions}}
+            <div id="block-massaction-action-{{action}}">
+                <a href="javascript:void(0);">
+                    {{#pix}} {{icon}}, moodle, {{actiontext}} {{/pix}}&nbsp;{{actiontext}}
+                </a>
+            </div>
+        {{/actions}}
+
+        {{#show_moveto_select}}
+            <form>
+                {{> block_massaction/moveto_select}}
+                <a id="block-massaction-action-moveto" href="javascript:void(0);">
+                    {{#pix}} t/right, moodle, {{#str}} action_movetosection, block_massaction{{/str}}{{/pix}}
+                </a>
+            </form>
+        {{/show_moveto_select}}
+    </div>
+
+    <form id="block-massaction-control-form" name="block-massaction-control-form" action="{{formaction}}" method="POST">
+        <input type="hidden" id="block-massaction-control-request" name="request" value="">
+        <input type="hidden" id="block-massaction-instance_id" name="instance_id" value="{{instanceid}}">
+        <input type="hidden" id="block-massaction-return_url" name="return_url" value="{{requesturi}}">
+    </form>
+    <div id="block-massaction-help-icon">{{{helpicon}}}</div>
+</div>

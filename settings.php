@@ -14,10 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Settings for the massactions block.
+ *
+ * @package    block_massaction
+ * @copyright  2022 ISB Bayern
+ * @author     Philipp Memmel
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2022012800;
-$plugin->requires  = 2021051702;
-$plugin->component = 'block_massaction';
-$plugin->maturity = MATURITY_ALPHA;
-$plugin->release = 'Build 20220108';
+if ($hassiteconfig) {
+
+    $ADMIN->add('blocksettings', new admin_category('block_massaction_settings',
+        new lang_string('pluginname', 'block_massaction')));
+
+    if ($ADMIN->fulltree) {
+        $settings->add(new admin_setting_configtext(
+            'block_massaction/duplicatemaxactivities',
+            new lang_string('duplicatemaxactivities', 'block_massaction'),
+            new lang_string('duplicatemaxactivities_description', 'block_massaction'),
+            5
+        ));
+    }
+}

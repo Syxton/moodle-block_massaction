@@ -1,7 +1,58 @@
-#mod-massaction-control-section-list-select {width: 99%;}
-#mod-massaction-control-section-list-moveto {max-width: 95%; margin-left: 0.5em;}
-#mod-massaction-control-deselectlist {postion:relative;float:right;}
-.block_massaction .massaction-action {position: relative; margin-left: 0.5em;}
-#mod-massaction-help-icon {text-align:center; padding:0.2em;}
+#block-massaction {
+    max-width: 400px;
+}
 
-#block_massaction_module_list th {padding-bottom:0.1em;}
+/* The following adaptions of colors are needed because option elements of select cannot be styled due to
+ * browser limitations.
+ */
+#block-massaction-control-section-list-select {
+    background-color: transparent;
+    width: 90%;
+}
+
+#block-massaction-control-section-list-select option {
+    color: var(--dark);
+}
+
+#block-massaction-control-section-list-select option:disabled {
+    color: var(--gray);
+}
+
+#block-massaction-control-section-list-moveto {
+    background-color: transparent;
+    width: 85%;
+}
+
+#block-massaction-control-section-list-moveto option {
+    color: var(--dark);
+}
+
+#block-massaction-control-section-list-moveto option:disabled {
+    color: var(--gray);
+}
+
+#block-massaction-control-deselectlist {
+    position: relative;
+    float: right;
+}
+
+.block-massaction .block-massaction-action {
+    position: relative;
+    margin-left: 0.5em;
+}
+
+#block-massaction-help-icon {
+    text-align: center;
+    padding: 0.2em;
+}
+
+#block-massaction-module-list {
+    margin-top: 3em;
+}
+
+.block-massaction-checkbox {
+    position: absolute;
+    transform: translateY(1.5rem);
+    /* In case the checkbox is overlapping with another element, let's make sure the checkbox is still clickable */
+    z-index: 1;
+}

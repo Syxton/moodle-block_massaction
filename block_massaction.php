@@ -20,123 +20,100 @@
  * @copyright  2013 University of Minnesota
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-
 class block_massaction extends block_base {
 
     /**
-     * initialize the plugin
+     * Initialize the plugin. This method is being called by the parent constructor by default.
      */
-    function init() {
+    public function init() {
         $this->title = get_string('blocktitle', 'block_massaction');
     }
-
 
     /**
      * @see block_base::applicable_formats()
      */
-    function applicable_formats() {
-        return array('course-view-weeks' => true, 'course-view-topics' => true);
+    public function applicable_formats(): array {
+        return ['site-index' => false,
+            'course-view-weeks' => true, 'course-view-topics' => true, 'course-view-topcoll' => true,
+            'course-view-tiles' => true, 'course-view-onetopic' => true];
     }
 
-
     /**
-     * no need to have multiple blocks to perform the same functionality
+     * No need to have multiple blocks to perform the same functionality
      */
-    function instance_allow_multiple() {
+    public function instance_allow_multiple(): bool {
         return false;
     }
 
+    /**
+     * @see block_base::has_config()
+     */
+    public function has_config() {
+        return true;
+    }
 
     /**
      * @see block_base::get_content()
      */
-    function get_content() {
-        global $CFG, $PAGE, $USER, $COURSE, $OUTPUT;
+    public function get_content() {
+        global $CFG, $COURSE, $OUTPUT;
 
-        if ($this->content !== NULL) {
+        if ($this->content !== null) {
             return $this->content;
         }
 
         $this->content = new stdClass();
-        $this->content->text   = '';
+        $this->content->text = '';
         $this->content->footer = '';
 
-        if ($PAGE->user_is_editing()) {
-            $jsmodule = array(
-                'name'         => 'block_massaction',
-                'fullpath'     => '/blocks/massaction/module.js',
-                'requires'     => array('base', 'io', 'node', 'json', 'event'),
-                'strings'	   => array(
-                    array('week', 'block_massaction'),
-                    array('topic', 'block_massaction'),
-                    array('section', 'block_massaction'),
-                    array('section_zero', 'block_massaction'),
-                    array('selecttarget', 'block_massaction'),
-                    array('noitemselected', 'block_massaction')
-                )
-            );
+        if ($this->page->user_is_editing()) {
 
-            $PAGE->requires->js('/blocks/massaction/js/module_selector.js');
-            $PAGE->requires->js_init_call('M.block_massaction.init',
-                                          array(array('course_format' => $COURSE->format)), true, $jsmodule);
-
-            $str = array(
-            	'selectall'             => get_string('selectall', 'block_massaction'),
-            	'itemsin'               => get_string('itemsin', 'block_massaction'),
-            	'allitems'              => get_string('allitems', 'block_massaction'),
-            	'deselectall'           => get_string('deselectall', 'block_massaction'),
-                'withselected'	        => get_string('withselected', 'block_massaction'),
-                'action_movetosection'	=> get_string('action_movetosection', 'block_massaction')
-            );
-
-            $this->content->text  = <<< EOB
-<!--Select item one-by-one or:<br/-->
-<a id="mod-massaction-control-selectall" href="javascript:void(0);">{$str['selectall']}</a><br/>
-<select id="mod-massaction-control-section-list-select">
-	<option value="all">{$str['allitems']}</option>
-</select>
-<a id="mod-massaction-control-deselectall" href="javascript:void(0);">{$str['deselectall']}</a><br/><br/>
-
-{$str['withselected']}:
-EOB;
-
-            // print the action links
-            $action_icons = array(
-                'moveleft'     => 't/left',
-                'moveright'    => 't/right',
-                'hide'         => 't/show',
-                'show'         => 't/hide',
-                'delete'       => 't/delete'
-                //'moveto'     => 't/move'
-            );
-
-            foreach ($action_icons as $action => $icon_path) {
-                $pix_path    = $OUTPUT->pix_url($icon_path);
-                $action_text = get_string('action_'.$action, 'block_massaction');
-
-                $this->content->text .= <<< EOB
-<br/>
-<a id="mod-massaction-action-{$action}" class="massaction-action" href="javascript:void(0);">
-	<img src="{$pix_path}" alt="{$action_text}" title="{$action_text}"/>&nbsp;{$action_text}
-</a>
-EOB;
+            $applicableformatkey = 'course-view-' . $COURSE->format;
+            $iscoursecompatible = in_array($applicableformatkey, $this->applicable_formats())
+                && $this->applicable_formats()[$applicableformatkey];
+            if (!$iscoursecompatible) {
+                    $this->content = new stdClass();
+                    $this->content->text = get_string('unusable', 'block_massaction');
+                    $this->content->footer = '';
+                    return $this->content;
             }
-            $this->content->text .= html_writer::empty_tag('br');
-            $this->content->text .= <<< EOB
-<select id="mod-massaction-control-section-list-moveto">
-	<option value="">{$str['action_movetosection']}</option>
-</select>
 
-<form id="mod-massaction-control-form" name="mod-massaction-control-form" action="{$CFG->wwwroot}/blocks/massaction/action.php" method="POST">
-	<input type="hidden" id="mod-massaction-control-request" name="request" value="">
-	<input type="hidden" id="mod-massaction-instance_id" name="instance_id" value="{$this->instance->id}">
-	<input type="hidden" id="mod-massaction-return_url" name="return_url" value="{$_SERVER['REQUEST_URI']}">
-</form>
-<div id="mod-massaction-help-icon">{$OUTPUT->help_icon('usage', 'block_massaction')}</div>
-EOB;
+            // Initialize the JS module.
+            $this->page->requires->js_call_amd('block_massaction/massactionblock', 'init', ['courseId' => $COURSE->id]);
+
+            $context = context_course::instance($COURSE->id);
+            // Actions to be rendered later on.
+            $actionicons = [];
+            if (has_capability('moodle/course:activityvisibility', $context)) {
+                // As we want to use this symbol for the *operation*, not the state, we switch the icons hide/show.
+                $actionicons['show'] = 't/hide';
+                $actionicons['hide'] = 't/show';
+                $actionicons['makeavailable'] = 't/block';
+            }
+            if (has_capability('moodle/backup:backuptargetimport', $context)
+                    && has_capability('moodle/restore:restoretargetimport', $context)) {
+                $actionicons['duplicate'] = 't/copy';
+            }
+            if (has_capability('moodle/course:manageactivities', $context)) {
+                $actionicons['delete'] = 't/delete';
+                $actionicons['moveright'] = 't/right';
+                $actionicons['moveleft'] = 't/left';
+            }
+
+            $actions = [];
+            foreach ($actionicons as $action => $iconpath) {
+                $actions[] = ['action' => $action, 'icon' => $iconpath,
+                    'actiontext' => get_string('action_' . $action, 'block_massaction')];
+            }
+
+            $this->content->text = $OUTPUT->render_from_template('block_massaction/block_massaction',
+                ['actions' => $actions, 'formaction' => $CFG->wwwroot . '/blocks/massaction/action.php',
+                    'instanceid' => $this->instance->id, 'requesturi' => $_SERVER['REQUEST_URI'],
+                    'helpicon' => $OUTPUT->help_icon('usage', 'block_massaction'),
+                    'show_moveto_select' => has_capability('moodle/course:manageactivities', $context),
+                    'sectionselecthelpicon' => $OUTPUT->help_icon('sectionselect', 'block_massaction')
+                ]);
         }
-
         return $this->content;
     }
 }
