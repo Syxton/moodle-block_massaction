@@ -23,6 +23,8 @@
  */
 
 use block_massaction\task\duplicate_task;
+use core\output\notification;
+use core\task\manager;
 
 require('../../config.php');
 
@@ -70,9 +72,9 @@ switch ($data->action) {
             $duplicatetask = new duplicate_task();
             $duplicatetask->set_userid($USER->id);
             $duplicatetask->set_custom_data(['modules' => $modulerecords]);
-            \core\task\manager::queue_adhoc_task($duplicatetask);
+            manager::queue_adhoc_task($duplicatetask);
             redirect($returnurl, get_string('backgroundtaskinformation', 'block_massaction'), null,
-                \core\output\notification::NOTIFY_SUCCESS);
+                notification::NOTIFY_SUCCESS);
         } else {
             block_massaction\actions::duplicate($modulerecords);
         }
@@ -102,9 +104,9 @@ switch ($data->action) {
             $duplicatetask = new duplicate_task();
             $duplicatetask->set_userid($USER->id);
             $duplicatetask->set_custom_data(['modules' => $modulerecords, 'sectionid' => $data->duplicateToTarget]);
-            \core\task\manager::queue_adhoc_task($duplicatetask);
+            manager::queue_adhoc_task($duplicatetask);
             redirect($returnurl, get_string('backgroundtaskinformation', 'block_massaction'), null,
-                \core\output\notification::NOTIFY_SUCCESS);
+                notification::NOTIFY_SUCCESS);
         } else {
             block_massaction\actions::duplicate($modulerecords, $data->duplicateToTarget);
         }

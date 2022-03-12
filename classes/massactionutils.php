@@ -48,7 +48,7 @@ class massactionutils {
      * @throws dml_exception if the database lookup fails
      * @throws moodle_exception if the json is of a wrong format
      */
-    public static function extract_modules_from_json(string $massactionrequest) : stdClass {
+    public static function extract_modules_from_json(string $massactionrequest): stdClass {
         global $DB;
         // Parse the submitted data.
         $data = json_decode($massactionrequest);
@@ -84,7 +84,7 @@ class massactionutils {
      * @throws coding_exception if lang strings cannot be called
      * @throws moodle_exception if course with given id is not found
      */
-    public static function extract_sections_information(int $courseid) : array {
+    public static function extract_sections_information(int $courseid): array {
         $sectionsarray = [];
         $modinfo = get_fast_modinfo($courseid);
         $courseformat = $modinfo->get_course()->format;
@@ -127,7 +127,7 @@ class massactionutils {
      * @return array the modulenames data objects: [{'modid' => MOD_ID, 'name' => MOD_NAME}, ...]
      * @throws moodle_exception
      */
-    public static function get_mod_names(int $courseid) : array {
+    public static function get_mod_names(int $courseid): array {
         $modinfo = get_fast_modinfo($courseid);
         $cminfos = [];
         foreach ($modinfo->get_cms() as $cm) {

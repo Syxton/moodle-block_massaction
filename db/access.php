@@ -24,21 +24,25 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'block/massaction:use' => array(
-        'riskbitmask'          => RISK_DATALOSS,
-        'captype'              => 'write',
-        'contextlevel'         => CONTEXT_BLOCK,
-        'archetypes'           => array(
-            'editingteacher'  => CAP_ALLOW,
-            'manager'         => CAP_ALLOW)),
+$capabilities = [
+    'block/massaction:use' => [
+        'riskbitmask' => RISK_DATALOSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => [
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 
-    'block/massaction:addinstance' => array(
-        'riskbitmask'          => RISK_DATALOSS,
-        'captype'              => 'write',
-        'contextlevel'         => CONTEXT_BLOCK,
-        'archetypes'           => array(
-            'editingteacher'  => CAP_ALLOW,
-            'manager'         => CAP_ALLOW),
-        'clonepermissionsfrom' => 'moodle/site:manageblocks')
-);
+    'block/massaction:addinstance' => [
+        'riskbitmask' => RISK_DATALOSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => [
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ],
+        'clonepermissionsfrom' => 'moodle/site:manageblocks'
+    ]
+];

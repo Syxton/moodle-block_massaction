@@ -71,9 +71,11 @@ class block_massaction extends block_base {
     /**
      * Sets up the content of the block for display to the user.
      *
-     * @return The HTML content of the block.
+     * @return stdClass The HTML content of the block.
+     * @throws coding_exception
+     * @throws moodle_exception
      */
-    public function get_content() {
+    public function get_content(): stdClass {
         global $CFG, $COURSE, $OUTPUT;
 
         if ($this->content !== null) {

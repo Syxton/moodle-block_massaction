@@ -18,18 +18,19 @@ namespace block_massaction;
 
 use advanced_testcase;
 use block_massaction;
+use dml_exception;
 
 /**
  * block_massaction phpunit test class.
  *
- * @package   block_massaction
+ * @package    block_massaction
  * @copyright  2021 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class massaction_test extends advanced_testcase {
     /**
-     * Prepare testing
+     * Prepare testing.
      */
     public function setUp(): void {
         $generator = $this->getDataGenerator();
@@ -50,7 +51,7 @@ class massaction_test extends advanced_testcase {
         $this->setUser($teacher);
     }
 
-    public function test_extract_modules_from_json() {
+    public function test_extract_modules_from_json(): void {
         // Negative tests.
         $this->expectException(\moodle_exception::class);
         block_massaction\massactionutils::extract_modules_from_json('{}');
@@ -87,7 +88,7 @@ class massaction_test extends advanced_testcase {
         }
     }
 
-    public function test_get_mod_names() {
+    public function test_get_mod_names(): void {
         $modulerecords = $this->get_test_course_modules();
         $modnames = \block_massaction\massactionutils::get_mod_names($this->course->id);
 
@@ -110,7 +111,8 @@ class massaction_test extends advanced_testcase {
     /**
      * Get all test course modules.
      *
-     * @return mixed
+     * @return array the database records of the modules of the test course
+     * @throws dml_exception
      */
     private function get_test_course_modules(): array {
         global $DB;
@@ -118,7 +120,7 @@ class massaction_test extends advanced_testcase {
         return $modulerecords;
     }
 
-    public function test_mass_delete_modules() {
+    public function test_mass_delete_modules(): void {
         global $DB;
         $modulerecords = $this->get_test_course_modules();
         block_massaction\actions::perform_deletion($modulerecords);
@@ -129,7 +131,7 @@ class massaction_test extends advanced_testcase {
         }
     }
 
-    public function test_mass_move_modules_to_new_section() {
+    public function test_mass_move_modules_to_new_section(): void {
         global $DB;
         $targetsectionnum = 3;
 
@@ -156,7 +158,7 @@ class massaction_test extends advanced_testcase {
         }
     }
 
-    public function test_mass_hide_unhide_modules() {
+    public function test_mass_hide_unhide_modules(): void {
         // Method should do nothing for empty modules array.
         // Throwing an exception would make this whole test fail, so this is a 'valid' test.
         block_massaction\actions::set_visibility([], 1);
@@ -264,7 +266,7 @@ class massaction_test extends advanced_testcase {
         }
     }
 
-    public function test_mass_duplicate_modules() {
+    public function test_mass_duplicate_modules(): void {
         // Call with empty values should do nothing.
         block_massaction\actions::duplicate([]);
         block_massaction\actions::duplicate([new \stdClass()]);
@@ -282,7 +284,7 @@ class massaction_test extends advanced_testcase {
         moveto_module(get_fast_modinfo($this->course->id)->get_cm(get_fast_modinfo($this->course->id)->get_sections()[3][3]),
             get_fast_modinfo($this->course->id)->get_section_info(3));
 
-        // Select some random course modules from different sections to be hidden.
+        // Select some random course modules from different sections to be duplicated.
         $selectedmoduleids[] = get_fast_modinfo($this->course->id)->get_sections()[1][0];
         $selectedmoduleids[] = get_fast_modinfo($this->course->id)->get_sections()[1][1];
         $selectedmoduleids[] = get_fast_modinfo($this->course->id)->get_sections()[3][0];
@@ -295,27 +297,44 @@ class massaction_test extends advanced_testcase {
 
         $modinfo = get_fast_modinfo($this->course->id);
         $sections = $modinfo->get_sections();
-        $incorrectorder = $sections[1];
-        $this->assertEquals($selectedmoduleids[0], $incorrectorder[0]);
-        $this->assertEquals($selectedmoduleids[1], $incorrectorder[1]);
+        $idsinsectionordered = $sections[1];
+        $this->assertEquals($selectedmoduleids[0], $idsinsectionordered[0]);
+        $this->assertEquals($selectedmoduleids[1], $idsinsectionordered[1]);
         // After the six already existing modules the duplicated modules should appear.
-        $this->assertEquals($modinfo->get_cm($incorrectorder[6])->name,
+        $this->assertEquals($modinfo->get_cm($idsinsectionordered[6])->name,
             $modinfo->get_cm($selectedmoduleids[0])->name . ' (copy)');
-        $this->assertEquals($modinfo->get_cm($incorrectorder[7])->name,
+        $this->assertEquals($modinfo->get_cm($idsinsectionordered[7])->name,
             $modinfo->get_cm($selectedmoduleids[1])->name . ' (copy)');
 
         // Same for the other modules in the other section.
-        $incorrectorder = $sections[3];
-        $this->assertEquals($selectedmoduleids[2], $incorrectorder[0]);
-        $this->assertEquals($selectedmoduleids[3], $incorrectorder[2]);
+        $idsinsectionordered = $sections[3];
+        $this->assertEquals($selectedmoduleids[2], $idsinsectionordered[0]);
+        $this->assertEquals($selectedmoduleids[3], $idsinsectionordered[2]);
         // After the six already existing modules the duplicated modules should appear.
-        $this->assertEquals($modinfo->get_cm($incorrectorder[6])->name,
+        $this->assertEquals($modinfo->get_cm($idsinsectionordered[6])->name,
             $modinfo->get_cm($selectedmoduleids[2])->name . ' (copy)');
-        $this->assertEquals($modinfo->get_cm($incorrectorder[7])->name,
+        $this->assertEquals($modinfo->get_cm($idsinsectionordered[7])->name,
+            $modinfo->get_cm($selectedmoduleids[3])->name . ' (copy)');
+
+        // Now test 'duplicate to section'. We still have not done anything to section 4, so we just use
+        // section 4 as target section.
+        block_massaction\actions::duplicate($selectedmodules, 4);
+        // After the 6 already existing modules we now should find all the duplicated ones.
+        $modinfo = get_fast_modinfo($this->course->id);
+        $sections = $modinfo->get_sections();
+        $idsinsectionordered = $sections[4];
+        // After the six already existing modules the duplicated modules should appear.
+        $this->assertEquals($modinfo->get_cm($idsinsectionordered[6])->name,
+            $modinfo->get_cm($selectedmoduleids[0])->name . ' (copy)');
+        $this->assertEquals($modinfo->get_cm($idsinsectionordered[7])->name,
+            $modinfo->get_cm($selectedmoduleids[1])->name . ' (copy)');
+        $this->assertEquals($modinfo->get_cm($idsinsectionordered[8])->name,
+            $modinfo->get_cm($selectedmoduleids[2])->name . ' (copy)');
+        $this->assertEquals($modinfo->get_cm($idsinsectionordered[9])->name,
             $modinfo->get_cm($selectedmoduleids[3])->name . ' (copy)');
     }
 
-    public function test_mass_adjust_indentation() {
+    public function test_mass_adjust_indentation(): void {
         // Method should do nothing for empty modules array.
         // Throwing an exception would make this whole test fail, so this a 'valid' test.
         block_massaction\actions::adjust_indentation([], 1);

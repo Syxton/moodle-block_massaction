@@ -1,4 +1,4 @@
-@block @block_massaction @block_massaction_actions @theme_mebis
+@block @block_massaction @block_massaction_actions
 Feature: Check if all the different type of actions of the mass actions block work
 
   Background:
@@ -80,3 +80,17 @@ Feature: Check if all the different type of actions of the mass actions block wo
     Then I should see "Test Activity2 (copy)" in the "Topic 1" "section"
     And I should see "Test Activity4 (copy)" in the "Topic 4" "section"
     And I should see "Test Activity5 (copy)" in the "Topic 4" "section"
+
+  @javascript
+  Scenario: Check if mass action 'duplicate to section' works
+    When I click on "Test Activity2 Checkbox" "checkbox"
+    And I click on "Test Activity4 Checkbox" "checkbox"
+    And I click on "Test Activity5 Checkbox" "checkbox"
+    And I set the field "Duplicate to section" in the "Mass Actions" "block" to "Topic 3"
+    And I click on "Duplicate to section" "link" in the "Mass Actions" "block"
+    Then I should see "Test Activity2" in the "Topic 1" "section"
+    And I should see "Test Activity4" in the "Topic 4" "section"
+    And I should see "Test Activity5" in the "Topic 4" "section"
+    And I should see "Test Activity2 (copy)" in the "Topic 3" "section"
+    And I should see "Test Activity4 (copy)" in the "Topic 3" "section"
+    And I should see "Test Activity5 (copy)" in the "Topic 3" "section"

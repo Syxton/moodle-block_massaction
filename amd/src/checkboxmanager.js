@@ -83,7 +83,7 @@ const addCheckboxToModule = (sectionNumber, moduleId, moduleName) => {
     const boxId = cssIds.BOX_ID_PREFIX + moduleId;
     const moduleElement = document.getElementById(usedMoodleCssClasses.MODULE_ID_PREFIX + moduleId);
 
-    // Avoid creating duplicate checkboxes (in case sharing the library).
+    // Avoid creating duplicate checkboxes.
     if (document.getElementById(boxId) === null) {
         // Add the checkbox.
         const checkBoxElement = document.createElement('input');
@@ -92,7 +92,7 @@ const addCheckboxToModule = (sectionNumber, moduleId, moduleName) => {
         checkBoxElement.id = boxId;
 
         if (moduleElement !== null) {
-            const checkboxDescription = moduleName + ' Checkbox';
+            const checkboxDescription = moduleName + constants.CHECKBOX_DESCRIPTION_SUFFIX;
             checkBoxElement.ariaLabel = checkboxDescription;
             checkBoxElement.name = checkboxDescription;
             // Finally add the created checkbox element.

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * bulk_task class: Adhoc task to process bulk actions of the block_massaction plugin.
+ * duplicate_task class: Adhoc task to process duplicating course modules from the block_massaction plugin.
  *
  * @package    block_massaction
  * @copyright  2022 ISB Bayern
@@ -26,6 +26,7 @@
 namespace block_massaction\task;
 
 use block_massaction\actions;
+use core\task\adhoc_task;
 use moodle_exception;
 use require_login_exception;
 use restore_controller_exception;
@@ -33,11 +34,11 @@ use restore_controller_exception;
 /**
  * Duplicate task class.
  *
- * @copyright  2021 ISB Bayern
+ * @copyright  2022 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class duplicate_task extends \core\task\adhoc_task {
+class duplicate_task extends adhoc_task {
 
     /**
      * Executes the duplication of multiple course modules.

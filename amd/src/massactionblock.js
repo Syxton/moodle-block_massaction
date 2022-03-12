@@ -61,6 +61,7 @@ export const cssIds = {
 export const constants = {
     SECTION_SELECT_DESCRIPTION_VALUE: 'description',
     SECTION_NUMBER_ALL_PLACEHOLDER: 'all',
+    CHECKBOX_DESCRIPTION_SUFFIX: ' Checkbox'
 };
 
 const actions = {

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for blocks_mbsnewcourse.
+ * Privacy Subsystem implementation for block_massaction.
  *
  * @package    block_massaction
  * @copyright  2021 ISB Bayern

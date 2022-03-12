@@ -1,5 +1,5 @@
-@block @block_massaction @block_massaction_checkbox_generation @theme_mebis
-Feature: Check if block generates all neccessary checkboxes in all the supported course formats and properly disables
+@block @block_massaction @block_massaction_checkbox_generation
+Feature: Check if block generates all necessary checkboxes in all the supported course formats and properly disables
   the currently not active sections (or sections not containing any modules)
 
   @javascript
