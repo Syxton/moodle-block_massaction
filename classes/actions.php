@@ -76,13 +76,22 @@ class actions {
      * @throws coding_exception
      */
     public static function set_visibility(array $modules, bool $visible, bool $visibleonpage = true) : void {
-        global $CFG;
+        global $COURSE, $CFG;
         require_once($CFG->dirroot . '/course/lib.php');
 
         $visibleint = $visible ? 1 : 0;
         $visibleonpageint = $visibleonpage ? 1 : 0;
+        $courseformat = course_get_format($COURSE->id);
 
         foreach ($modules as $cm) {
+            if ($visible && !$visibleonpage) {
+                // We want to set the visibility to 'available, but hidden', but have to respect the global config and
+                // the course format config.
+                if (empty($CFG->allowstealth) || !$courseformat->allow_stealth_module_visibility($cm, $cm->section)) {
+                    // We silently ignore this course module it must not be set to 'available, but hidden'.
+                    continue;
+                }
+            }
             if (set_coursemodule_visible($cm->id, $visibleint, $visibleonpageint)) {
                 course_module_updated::create_from_cm(get_coursemodule_from_id(false, $cm->id))->trigger();
             }

@@ -63,6 +63,9 @@ switch ($data->action) {
         break;
     case 'makeavailable':
         require_capability('moodle/course:activityvisibility', $context);
+        if (empty($CFG->allowstealth)) {
+            throw new invalid_parameter_exception('The "makeavailable" action is deactivated.');
+        }
         block_massaction\actions::set_visibility($modulerecords, true, false);
         break;
     case 'duplicate':
