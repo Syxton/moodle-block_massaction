@@ -2,7 +2,9 @@
 Feature: Check if all the different type of actions of the mass actions block work
 
   Background:
-    Given the following "courses" exist:
+    Given the following config values are set as admin:
+      | allowstealth | 1 |
+    And the following "courses" exist:
       | fullname        | shortname | numsections | format  |
       | Test course     | TC        | 5           | topics  |
     And the following "users" exist:
@@ -38,6 +40,18 @@ Feature: Check if all the different type of actions of the mass actions block wo
     And I click on "Show" "link" in the "Mass Actions" "block"
     Then "Test Activity1" activity should be visible
     And "Test Activity4" activity should be visible
+    When I click on "Test Activity1 Checkbox" "checkbox"
+    And I click on "Test Activity4 Checkbox" "checkbox"
+    And I click on "Make available" "link" in the "Mass Actions" "block"
+    And I open "Test Activity1" actions menu
+    Then "Test Activity1" actions menu should have "Make unavailable" item
+    When I open "Test Activity4" actions menu
+    Then "Test Activity4" actions menu should have "Make unavailable" item
+    And I log out
+    When I log in as "student1"
+    And I am on "Test course" course homepage
+    Then I should not see "Test Activity1"
+    And I should not see "Test Activity4"
 
   @javascript
   Scenario: Check if mass action 'move to section' works

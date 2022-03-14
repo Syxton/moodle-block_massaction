@@ -159,6 +159,8 @@ class massaction_test extends advanced_testcase {
     }
 
     public function test_mass_hide_unhide_modules(): void {
+        global $CFG;
+
         // Method should do nothing for empty modules array.
         // Throwing an exception would make this whole test fail, so this is a 'valid' test.
         block_massaction\actions::set_visibility([], 1);
@@ -220,12 +222,15 @@ class massaction_test extends advanced_testcase {
         }
 
         // Check if we can hide them, but make them available.
+        // First of all enable stealthing.
+        $CFG->allowstealth = 1;
+
         block_massaction\actions::set_visibility($selectedmodules, true, false);
         // Reload modules from database.
         $selectedmodules = array_filter($this->get_test_course_modules(), function($module) use ($selectedmoduleids) {
             return in_array($module->id, $selectedmoduleids);
         });
-        // All selected modules should now still be visible.
+        // All selected modules should now still be available, but hidden on course page.
         foreach ($selectedmodules as $module) {
             $this->assertEquals(1, $module->visible);
             $this->assertEquals(0, $module->visibleoncoursepage);
@@ -263,6 +268,22 @@ class massaction_test extends advanced_testcase {
         foreach ($selectedmodules as $module) {
             $this->assertEquals(1, $module->visible);
             $this->assertEquals(0, $module->visibleoncoursepage);
+        }
+
+        // Now let's see if we avoid making modules available, but not visible on course page if the config option is not set.
+        $CFG->allowstealth = 0;
+        // First make them visible again.
+        block_massaction\actions::set_visibility($selectedmodules, true);
+        // Now try to make them 'available, but not visible on course page'.
+        block_massaction\actions::set_visibility($selectedmodules, true, false);
+        // Reload modules from database.
+        $selectedmodules = array_filter($this->get_test_course_modules(), function($module) use ($selectedmoduleids) {
+            return in_array($module->id, $selectedmoduleids);
+        });
+        // They still should be visible, also on course page.
+        foreach ($selectedmodules as $module) {
+            $this->assertEquals(1, $module->visible);
+            $this->assertEquals(1, $module->visibleoncoursepage);
         }
     }
 
