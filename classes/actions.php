@@ -111,12 +111,12 @@ class actions {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/course/lib.php');
         require_once($CFG->dirroot . '/lib/modinfolib.php');
-        if (empty($modules) || !$modules[array_key_first($modules)]
-                || !property_exists($modules[array_key_first($modules)], 'course')) {
+        if (empty($modules) || !reset($modules)
+                || !property_exists(reset($modules), 'course')) {
             return;
         }
 
-        $courseid = $modules[array_key_first($modules)]->course;
+        $courseid = reset($modules)->course;
         // Needed to set the correct context.
         require_login($courseid);
 
