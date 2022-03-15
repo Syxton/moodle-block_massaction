@@ -285,7 +285,7 @@ const submitAction = (action) => {
 
 const displayError = (errorText) => {
     Promise.resolve([Str.get_string('error', 'core'), errorText, Str.get_string('back', 'core')]).then(text => {
-        require(['core/notification'], function (notification) {
+        require(['core/notification'], function(notification) {
             notification.alert(text[0], text[1], text[2]).then().catch();
         });
         return null;
