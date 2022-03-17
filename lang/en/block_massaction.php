@@ -66,11 +66,9 @@ $string['noactionsavailable'] = 'You do not have the permissions to execute any 
 $string['nomovingtargetselected'] = 'Please select a target section';
 $string['sectionnotexist'] = 'Target section does not exist';
 $string['unusable'] = 'The mass action functionality cannot be used in this course format or the current theme';
-$string['usage'] = 'usage of the Mass Actions Block';
-$string['usage_help'] = <<<EOB
-<p>This block allows instructors to perform actions upon multiple resources or activities in the class view, rather than having to perform repeated actions on individual items.</p>
+$string['usage'] = 'Usage of the Mass Actions Block';
+$string['usage_help'] = '<p>This block allows instructors to perform actions upon multiple resources or activities in the class view, rather than having to perform repeated actions on individual items.</p>
 <p>To use this block, Javascript must be enabled in your browser and you must be in editing mode in the course home page. Supported course formats are Week, Topic, Topcoll, Onetopic and Tiles.</p>
 <p>Supported actions include deletion, in-/outdentation, hiding/revealing and moving.
 To select items to perform actions on, simply click the checkbox to the left of it in the course home page, or you may select all items,
-or select all items in a section using the block. To perform actions, click the action you would like to perform inside the block.</p>
-EOB;
+or select all items in a section using the block. To perform actions, click the action you would like to perform inside the block.</p>';
