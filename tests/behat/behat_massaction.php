@@ -70,4 +70,16 @@ class behat_massaction extends behat_base {
             throw new \Moodle\BehatExtension\Exception\SkippedException;
         }
     }
+
+    /**
+     * Checks that grid course format is installed.
+     *
+     * @Given /^grid_course_format_is_installed$/
+     */
+    public function grid_course_format_is_installed() {
+        $formatplugins = core_plugin_manager::instance()->get_plugins_of_type('format');
+        if (!isset($formatplugins["grid"])) {
+            throw new \Moodle\BehatExtension\Exception\SkippedException;
+        }
+    }
 }
