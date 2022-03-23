@@ -82,4 +82,16 @@ class behat_massaction extends behat_base {
             throw new \Moodle\BehatExtension\Exception\SkippedException;
         }
     }
+
+    /**
+     * Checks that flexsections course format is installed.
+     *
+     * @Given /^flexsections_course_format_is_installed$/
+     */
+    public function flexsections_course_format_is_installed() {
+        $formatplugins = core_plugin_manager::instance()->get_plugins_of_type('format');
+        if (!isset($formatplugins["flexsections"])) {
+            throw new \Moodle\BehatExtension\Exception\SkippedException;
+        }
+    }
 }
