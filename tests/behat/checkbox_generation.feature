@@ -88,7 +88,7 @@ Feature: Check if block generates all necessary checkboxes in all the supported 
       | topics       |
 
   @javascript
-  Scenario Outline: Check if checkboxes are created properly for grid format
+  Scenario: Check if checkboxes are created properly for grid format
     Given grid_course_format_is_installed
     And the following "courses" exist:
       | fullname        | shortname | numsections | format |
@@ -125,7 +125,7 @@ Feature: Check if block generates all necessary checkboxes in all the supported 
     Then the "disabled" attribute of "#block-massaction-control-section-list-select-option-4" "css_element" should not be set
 
   @javascript
-  Scenario Outline: Check if checkboxes are created properly for flexsections format
+  Scenario: Check if checkboxes are created properly for flexsections format
     Given flexsections_course_format_is_installed
     And the following "courses" exist:
       | fullname        | shortname | numsections | format       |
@@ -162,7 +162,7 @@ Feature: Check if block generates all necessary checkboxes in all the supported 
     Then the "disabled" attribute of "#block-massaction-control-section-list-select-option-4" "css_element" should not be set
 
   @javascript
-  Scenario Outline: Check if checkboxes are created properly for topcoll format
+  Scenario: Check if checkboxes are created properly for topcoll format
     Given topcoll_course_format_is_installed
     And the following "courses" exist:
       | fullname        | shortname | numsections | format  |
@@ -203,7 +203,7 @@ Feature: Check if block generates all necessary checkboxes in all the supported 
     Then the "disabled" attribute of "#block-massaction-control-section-list-select-option-4" "css_element" should not be set
 
   @javascript
-  Scenario Outline: Check if checkboxes are created properly for tiles format
+  Scenario: Check if checkboxes are created properly for tiles format
     Given tiles_course_format_is_installed
     And the following "courses" exist:
       | fullname        | shortname | numsections | format |
