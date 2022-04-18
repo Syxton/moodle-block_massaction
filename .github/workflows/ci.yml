@@ -32,22 +32,22 @@ jobs:
       matrix:
         include:
           - php: '8.0'
-            moodle-branch: 'master'
+            moodle-branch: 'MOODLE_400_STABLE'
             database: 'mariadb'
           - php: '8.0'
-            moodle-branch: 'master'
+            moodle-branch: 'MOODLE_400_STABLE'
             database: 'pgsql'
           - php: '7.4'
-            moodle-branch: 'master'
+            moodle-branch: 'MOODLE_400_STABLE'
             database: 'mariadb'
           - php: '7.4'
-            moodle-branch: 'master'
+            moodle-branch: 'MOODLE_400_STABLE'
             database: 'pgsql'
           - php: '7.3'
-            moodle-branch: 'master'
+            moodle-branch: 'MOODLE_400_STABLE'
             database: 'mariadb'
           - php: '7.3'
-            moodle-branch: 'master'
+            moodle-branch: 'MOODLE_400_STABLE'
             database: 'pgsql'
 
     steps:
@@ -108,7 +108,6 @@ jobs:
         run: moodle-plugin-ci savepoints
 
       - name: Mustache Lint
-        continue-on-error: true # This step will show errors but will not fail
         if: ${{ always() }}
         run: moodle-plugin-ci mustache
 
