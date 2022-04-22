@@ -38,6 +38,11 @@ function xmldb_block_massaction_upgrade($oldversion, $block): bool {
         upgrade_block_savepoint(true, 2022000000, 'massaction', false);
     }
 
+    if ($oldversion < 2022042001) { // Add buttons support.
+        block_massaction_add_supported_format('buttons');
+        upgrade_block_savepoint(true, 2022042001, 'massaction', false);
+    }
+
     return true;
 }
 

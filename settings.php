@@ -49,7 +49,7 @@ if ($hassiteconfig) {
         });
 
         // These are the formats supported by the maintainer.
-        $supportedformatsbydefault = ['weeks' => 1, 'topics' => 1, 'topcoll' => 1];
+        $supportedformatsbydefault = ['weeks' => 1, 'topics' => 1, 'topcoll' => 1, 'buttons' => 1];
 
         $settings->add(new admin_setting_configmulticheckbox(
             'block_massaction/applicablecourseformats',
