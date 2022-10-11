@@ -124,6 +124,28 @@ Feature: Check if all the different type of actions of the mass actions block wo
     And I should see "Test Activity5" in the "Topic 2" "section"
 
   @javascript
+  Scenario: Check if mass action 'duplicate to course' works (new section)
+    Given the following "courses" exist:
+      | fullname        | shortname | numsections | format  |
+      | Test course 2   | TC2       | 2           | topics  |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | teacher1 | TC2    | editingteacher |
+    When I click on "Test Activity2 Checkbox" "checkbox"
+    And I click on "Test Activity4 Checkbox" "checkbox"
+    And I click on "Test Activity5 Checkbox" "checkbox"
+    And I click on "Duplicate to another course" "button" in the "Mass Actions" "block"
+    And I open the autocomplete suggestions list
+    And I click on "Test course 2" item in the autocomplete list
+    And I click on "Choose course" "button"
+    And I click on "New Section" "radio"
+    And I click on "Choose section" "button"
+    And I am on "Test course 2" course homepage
+    Then I should see "Test Activity2" in the "Topic 3" "section"
+    And I should see "Test Activity4" in the "Topic 3" "section"
+    And I should see "Test Activity5" in the "Topic 3" "section"
+
+  @javascript
   Scenario: Check if mass action 'duplicate to section' works
     When I click on "Test Activity2 Checkbox" "checkbox"
     And I click on "Test Activity4 Checkbox" "checkbox"

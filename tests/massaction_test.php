@@ -479,19 +479,9 @@ class massaction_test extends advanced_testcase {
                 $sourcecoursemodinfo->get_cm($selectedmoduleids[$i])->name);
         }
 
-        // We now test duplicating to a target section.
+        // Let's duplicate to a specific existing section.
         $targetsectionnum = 2;
         $targetcourseid = $this->setup_target_course_for_duplicating(3);
-        $targetcoursemodinfo = get_fast_modinfo($targetcourseid);
-        $modulescount = count($targetcoursemodinfo->get_instances());
-        block_massaction\actions::duplicate_to_course($selectedmodules, $targetcourseid, 7);
-        $targetcoursemodinfo = get_fast_modinfo($targetcourseid);
-        // Assert nothing happened and no modules have been duplicated.
-        $this->assertCount($modulescount, $targetcoursemodinfo->get_instances());
-        // Also, no new sections should have been generated.
-        $this->assertCount(4, $targetcoursemodinfo->get_section_info_all());
-
-        // Now let's duplicate.
         block_massaction\actions::duplicate_to_course($selectedmodules, $targetcourseid, $targetsectionnum);
         $targetcoursemodinfo = get_fast_modinfo($targetcourseid);
         // No new sections should have been generated.
@@ -500,6 +490,20 @@ class massaction_test extends advanced_testcase {
         for ($i = 0; $i < count($selectedmoduleids); $i++) {
             // Now all duplicated modules should be in section 2.
             $this->assertEquals($targetcoursemodinfo->get_cm($targetcoursemodinfo->get_sections()[2][$i])->name,
+                $sourcecoursemodinfo->get_cm($selectedmoduleids[$i])->name);
+        }
+
+        // Let's duplicate to a sectionnum that does not exist by creating a new section at the end of the target course.
+        $targetsectionnum = 8;
+        $targetcourseid = $this->setup_target_course_for_duplicating(3);
+        block_massaction\actions::duplicate_to_course($selectedmodules, $targetcourseid, $targetsectionnum);
+        $targetcoursemodinfo = get_fast_modinfo($targetcourseid);
+        // A new section should have been generated.
+        $this->assertCount(5, $targetcoursemodinfo->get_section_info_all());
+        // To check if duplication has worked we just compare the names of the modules.
+        for ($i = 0; $i < count($selectedmoduleids); $i++) {
+            // Now all duplicated modules should be in section 4.
+            $this->assertEquals($targetcoursemodinfo->get_cm($targetcoursemodinfo->get_sections()[4][$i])->name,
                 $sourcecoursemodinfo->get_cm($selectedmoduleids[$i])->name);
         }
     }

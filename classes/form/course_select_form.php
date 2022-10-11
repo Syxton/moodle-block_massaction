@@ -54,6 +54,8 @@ class course_select_form extends moodleform {
         $mform->setType('request', PARAM_RAW);
         $mform->addElement('hidden', 'instance_id', $this->_customdata['instance_id']);
         $mform->setType('instance_id', PARAM_INT);
+        $mform->addElement('hidden', 'sourcecourseid', $this->_customdata['sourcecourseid']);
+        $mform->setType('sourcecourseid', PARAM_INT);
         $mform->addElement('hidden', 'return_url', $this->_customdata['return_url']);
         $mform->setType('return_url', PARAM_URL);
 

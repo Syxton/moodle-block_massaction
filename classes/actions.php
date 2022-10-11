@@ -207,25 +207,44 @@ class actions {
 
         $sourcemodinfo = get_fast_modinfo($sourcecourseid);
         $targetmodinfo = get_fast_modinfo($targetcourseid);
+        $targetformat = course_get_format($targetmodinfo->get_course());
+        $targetsectionnum = $targetformat->get_last_section_number();
 
-        // If a the target section number has been specified and there is no such target section, we do nothing.
-        // This should have been prevented by the UI anyway, but we want to be extra safe here.
-        if ($sectionnum != -1 && $sectionnum > count($targetmodinfo->get_section_info_all()) - 1) {
-            return;
+        // If a new section has been specified, we create one.
+        if ($sectionnum > $targetsectionnum) {
+            if (has_capability('moodle/course:update', context_course::instance($targetcourseid))) {
+                $targetformatopt = $targetformat->get_format_options();
+                // No course format setting or no orphaned sections exist.
+                if (!isset($targetformatopt['numsections']) || !($targetformatopt['numsections'] < $targetsectionnum)) {
+                    course_create_section($targetcourseid);
+                }
+
+                // Update course format setting to prevent new orphaned sections.
+                if (isset($targetformatopt['numsections'])) {
+                    update_course((object)array('id' => $targetcourseid, 'numsections' => $targetformatopt['numsections'] + 1));
+                }
+
+                // Make sure new sectionnum is set accurately.
+                $sectionnum = $targetsectionnum + 1;
+            } else {
+                return; // No permissions to add section.
+            }
         }
 
         if ($sectionnum == -1) {
             // In case no target section is specified we make sure that enough sections in the target course exist before
             // duplicating, so each course module will be restored to the section number it has in the source course.
-            $sourcecoursemaxsectionnum = max(array_map(function($mod) use ($sourcemodinfo) {
+            $srcmaxsectionnum = max(array_map(function($mod) use ($sourcemodinfo) {
                 return $sourcemodinfo->get_cm($mod->id)->sectionnum;
             }, $modules));
-            // We need to subtract 1 because there is section 0.
-            $targetcoursemaxsectionnum = count($targetmodinfo->get_section_info_all()) - 1;
 
-            for ($i = 0; $i < $sourcecoursemaxsectionnum - $targetcoursemaxsectionnum; $i++) {
-                course_create_section($targetcourseid);
+            $targetformatopt = $targetformat->get_format_options();
+            if (isset($targetformatopt['numsections']) && $targetformatopt['numsections'] < $srcmaxsectionnum) {
+                // Update course format setting to prevent orphaned sections.
+                update_course((object)array('id' => $targetcourseid, 'numsections' => $srcmaxsectionnum));
             }
+
+            course_create_sections_if_missing($targetcourseid, $srcmaxsectionnum);
         }
 
         $idsincourseorder = self::sort_course_order($modules);
