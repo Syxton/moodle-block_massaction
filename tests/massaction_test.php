@@ -51,10 +51,14 @@ class massaction_test extends advanced_testcase {
         $generator->enrol_user($teacher->id, $this->course->id, 'editingteacher');
 
         // Generate two modules of each type for each of the 5 sections, so we have 6 modules per section.
+        $modulerecord = [
+            'course' => $this->course->id,
+            'showdescription' => 0
+        ];
         for ($i = 0; $i < 10; $i++) {
-            $generator->create_module('assign', ['course' => $this->course->id], ['section' => floor($i / 2)]);
+            $generator->create_module('assign', $modulerecord, ['section' => floor($i / 2)]);
             $generator->create_module('label', ['course' => $this->course->id], ['section' => floor($i / 2)]);
-            $generator->create_module('page', ['course' => $this->course->id], ['section' => floor($i / 2)]);
+            $generator->create_module('page', $modulerecord, ['section' => floor($i / 2)]);
         }
 
         $this->setUser($teacher);
@@ -123,6 +127,66 @@ class massaction_test extends advanced_testcase {
             // We delete asynchronously, so we have to only check if there aren't any modules without deletion in progress.
             $modulerecord = $DB->get_record_select('course_modules', 'id = ? AND deletioninprogress = 0', [$module->id]);
             $this->assertEquals(false, $modulerecord);
+        }
+    }
+
+    /**
+     * Tests the showdescription/hidedescription bulk action of multiple modules.
+     *
+     * @covers \block_massaction\actions::set_visibility
+     * @return void
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    public function test_mass_show_hide_description(): void {
+        global $DB;
+        $labelid = $DB->get_record('modules', ['name' => 'label'])->id;
+        // Select some random course modules from different sections to be hidden.
+        $selectedmoduleids[] = get_fast_modinfo($this->course->id)->get_sections()[1][0];
+        $selectedmoduleids[] = get_fast_modinfo($this->course->id)->get_sections()[2][1];
+        $selectedmoduleids[] = get_fast_modinfo($this->course->id)->get_sections()[3][2];
+
+        $selectedmodules = array_filter($this->get_test_course_modules(), function($module) use ($selectedmoduleids) {
+            return in_array($module->id, $selectedmoduleids);
+        });
+
+        // Assert the modules do not show a description in the course page yet.
+        foreach ($selectedmodules as $module) {
+            // Labels and similar module types (without separate view page) are unaffected.
+            if ($module->module === $labelid) {
+                $this->assertEquals(1, $module->showdescription);
+            } else {
+                $this->assertEquals(0, $module->showdescription);
+            }
+        }
+        block_massaction\actions::show_description($selectedmodules, true);
+        // Reload modules from database.
+        $selectedmodules = array_filter($this->get_test_course_modules(), function($module) use ($selectedmoduleids) {
+            return in_array($module->id, $selectedmoduleids);
+        });
+        // All selected modules should now show the description in the course page.
+        foreach ($selectedmodules as $module) {
+            // Labels and similar module types (without separate view page) are unaffected.
+            if ($module->module === $labelid) {
+                $this->assertEquals(1, $module->showdescription);
+            } else {
+                $this->assertEquals(1, $module->showdescription);
+            }
+        }
+        block_massaction\actions::show_description($selectedmodules, false);
+        // Reload modules from database.
+        $selectedmodules = array_filter($this->get_test_course_modules(), function($module) use ($selectedmoduleids) {
+            return in_array($module->id, $selectedmoduleids);
+        });
+        // All selected modules should now not show the description in the course page.
+        foreach ($selectedmodules as $module) {
+            // Labels and similar module types (without separate view page) are unaffected.
+            if ($module->module === $labelid) {
+                $this->assertEquals(1, $module->showdescription);
+            } else {
+                $this->assertEquals(0, $module->showdescription);
+            }
         }
     }
 

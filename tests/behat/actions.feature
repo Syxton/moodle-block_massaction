@@ -16,12 +16,12 @@ Feature: Check if all the different type of actions of the mass actions block wo
       | teacher1 | TC     | editingteacher |
       | student1 | TC     | student        |
     And the following "activities" exist:
-      | activity | course | idnumber | name           | intro                 | section |
-      | page     | TC     | 1        | Test Activity1 | Test page description | 0       |
-      | page     | TC     | 2        | Test Activity2 | Test page description | 1       |
-      | label    | TC     | 3        | Test Activity3 | Label text            | 2       |
-      | page     | TC     | 4        | Test Activity4 | Test page description | 4       |
-      | assign   | TC     | 5        | Test Activity5 | Test page description | 4       |
+      | activity | course | idnumber | name           | intro                  | section |
+      | page     | TC     | 1        | Test Activity1 | Test page description1 | 0       |
+      | page     | TC     | 2        | Test Activity2 | Test page description2 | 1       |
+      | label    | TC     | 3        | Test Activity3 | Label text3            | 2       |
+      | page     | TC     | 4        | Test Activity4 | Test page description4 | 4       |
+      | assign   | TC     | 5        | Test Activity5 | Test page description5 | 4       |
     When I log in as "teacher1"
     And I am on "Test course" course homepage with editing mode on
     And I add the "Mass Actions" block
@@ -68,6 +68,21 @@ Feature: Check if all the different type of actions of the mass actions block wo
     And I click on "Delete" "button"
     Then I should not see "Test Activity1"
     And I should not see "Test Activity4"
+
+  @javascript
+  Scenario: Check if mass actions 'showdescription' and 'hidedescription' work
+    When I click on "Test Activity1 Checkbox" "checkbox"
+    And I click on "Test Activity4 Checkbox" "checkbox"
+    And I click on "Show description" "button" in the "Mass Actions" "block"
+    Then I should see "Test page description1"
+    And I should see "Test page description4"
+    When I click on "Test Activity1 Checkbox" "checkbox"
+    And I click on "Test Activity4 Checkbox" "checkbox"
+    And I click on "Hide description" "button" in the "Mass Actions" "block"
+    Then I should see "Test Activity1"
+    And I should see "Test Activity4"
+    And I should not see "Test page description1"
+    And I should not see "Test page description4"
 
   @javascript
   Scenario: Check if mass action 'duplicate' works

@@ -411,6 +411,42 @@ class actions {
     }
 
     /**
+     * Bulk function to show/hide the description of selected course modules on the course page.
+     *
+     * @param array $modules the course module records to change the showdescription flag
+     * @param bool $showdescription true if description should be shown, false otherwise
+     * @return void
+     * @throws dml_exception
+     * @throws moodle_exception if course modules cannot be found
+     */
+    public static function show_description(array $modules, bool $showdescription): void {
+        global $DB;
+        if (empty($modules)) {
+            return;
+        }
+        $showdescriptionbit = $showdescription ? 1 : 0;
+
+        $modinfo = get_fast_modinfo(reset($modules)->course);
+        foreach ($modules as $cm) {
+            if (is_null($modinfo->get_cm($cm->id)->url)) {
+                // In case of course modules like 'label', we must not do anything.
+                continue;
+            }
+            if ($cmrecord = $DB->get_record('course_modules', ['id' => $cm->id])) {
+                if (intval($cmrecord->showdescription) !== $showdescriptionbit) {
+                    $updatedata = new \stdClass();
+                    $updatedata->id = $cm->id;
+                    $updatedata->showdescription = $showdescriptionbit;
+                    $DB->update_record('course_modules', $updatedata);
+                    \course_modinfo::purge_course_module_cache($cm->course, $cm->id);
+                }
+            } else {
+                throw new moodle_exception('Could not find course module with id ' . $cm->id);
+            }
+        }
+    }
+
+    /**
      * Send content changed notification for multiple course modules.
      *
      * @param array $modules the modules for which a notification should be sent

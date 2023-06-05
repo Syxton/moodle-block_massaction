@@ -41,6 +41,8 @@ export const cssIds = {
     MAKE_AVAILABLE_LINK: 'block-massaction-action-makeavailable',
     DUPLICATE_LINK: 'block-massaction-action-duplicate',
     DELETE_LINK: 'block-massaction-action-delete',
+    SHOW_DESCRIPTION_LINK: 'block-massaction-action-showdescription',
+    HIDE_DESCRIPTION_LINK: 'block-massaction-action-hidedescription',
     CONTENT_CHANGED_NOTIFICATION_LINK: 'block-massaction-action-contentchangednotification',
     MOVELEFT_LINK: 'block-massaction-action-moveleft',
     MOVERIGHT_LINK: 'block-massaction-action-moveright',
@@ -68,6 +70,8 @@ const actions = {
     MAKE_AVAILABLE: 'makeavailable',
     DUPLICATE: 'duplicate',
     DELETE: 'delete',
+    SHOW_DESCRIPTION: 'showdescription',
+    HIDE_DESCRIPTION: 'hidedescription',
     MOVE_LEFT: 'moveleft',
     MOVE_RIGHT: 'moveright',
     CONTENT_CHANGED_NOTIFICATION: 'contentchangednotification',
@@ -106,6 +110,12 @@ export const init = async() => {
 
     document.getElementById(cssIds.DELETE_LINK)?.addEventListener('click',
         () => submitAction(actions.DELETE), false);
+
+    document.getElementById(cssIds.SHOW_DESCRIPTION_LINK)?.addEventListener('click',
+        () => submitAction(actions.SHOW_DESCRIPTION), false);
+
+    document.getElementById(cssIds.HIDE_DESCRIPTION_LINK)?.addEventListener('click',
+        () => submitAction(actions.HIDE_DESCRIPTION), false);
 
     document.getElementById(cssIds.CONTENT_CHANGED_NOTIFICATION_LINK)?.addEventListener('click',
         () => submitAction(actions.CONTENT_CHANGED_NOTIFICATION), false);
@@ -159,6 +169,8 @@ const submitAction = (action) => {
         case actions.MOVE_LEFT:
         case actions.MOVE_RIGHT:
         case actions.DELETE:
+        case actions.SHOW_DESCRIPTION:
+        case actions.HIDE_DESCRIPTION:
             break;
 
         case actions.MOVE_TO:

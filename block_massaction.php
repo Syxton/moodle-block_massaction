@@ -148,6 +148,8 @@ class block_massaction extends block_base {
                     $actionicons['moveright'] = 't/right';
                     $actionicons['moveleft'] = 't/left';
                 }
+                $actionicons['showdescription'] = 't/more';
+                $actionicons['hidedescription'] = 't/less';
             }
             if (has_capability('block/massaction:sendcontentchangednotifications',
                     context_block::instance($this->instance->id))) {

@@ -97,6 +97,14 @@ switch ($data->action) {
             block_massaction\actions::perform_deletion($modulerecords);
         }
         break;
+    case 'showdescription':
+        require_capability('moodle/course:manageactivities', $context);
+        block_massaction\actions::show_description($modulerecords, true);
+        break;
+    case 'hidedescription':
+        require_capability('moodle/course:manageactivities', $context);
+        block_massaction\actions::show_description($modulerecords, false);
+        break;
     case 'contentchangednotification':
         require_capability('moodle/course:manageactivities', $context);
         block_massaction\actions::send_content_changed_notifications($modulerecords);
