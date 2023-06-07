@@ -71,6 +71,9 @@ Feature: Check if all the different type of actions of the mass actions block wo
 
   @javascript
   Scenario: Check if mass actions 'showdescription' and 'hidedescription' work
+    When I am on "Test course" course homepage
+    Then I should not see "Test page description1"
+    And I should not see "Test page description4"
     When I click on "Test Activity1 Checkbox" "checkbox"
     And I click on "Test Activity4 Checkbox" "checkbox"
     And I click on "Show description" "button" in the "Mass Actions" "block"
