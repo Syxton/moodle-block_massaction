@@ -66,7 +66,7 @@ class massactionutils {
         }
 
         $modulerecords = $DB->get_records_select('course_modules',
-            'ID IN (' . implode(',', array_fill(0, count($data->moduleIds), '?')) . ')',
+            'id IN (' . implode(',', array_fill(0, count($data->moduleIds), '?')) . ')',
             $data->moduleIds);
 
         foreach ($data->moduleIds as $modid) {
