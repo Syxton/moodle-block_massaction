@@ -24,6 +24,8 @@
 
 import * as checkboxmanager from './checkboxmanager';
 import * as Str from 'core/str';
+import Log from 'core/log';
+import Notification from 'core/notification';
 import Pending from 'core/pending';
 import {getCurrentCourseEditor} from 'core_courseformat/courseeditor';
 
@@ -88,7 +90,9 @@ export const init = async() => {
 
     const editor = getCurrentCourseEditor();
     // Initialize the checkbox manager as soon as the courseeditor is ready.
-    editor.stateManager.getInitialPromise().then(() => checkboxmanager.initCheckboxManager()).catch();
+    editor.stateManager.getInitialPromise()
+        .then(() => checkboxmanager.initCheckboxManager())
+        .catch(error => Log.debug(error));
 
     document.getElementById(cssIds.SELECT_ALL_LINK)?.addEventListener('click',
         () => checkboxmanager.setSectionSelection(true, constants.SECTION_NUMBER_ALL_PLACEHOLDER), false);
@@ -201,10 +205,7 @@ const submitAction = (action) => {
 };
 
 const displayError = (errorText) => {
-    Promise.resolve([Str.get_string('error', 'core'), errorText, Str.get_string('back', 'core')]).then(text => {
-        require(['core/notification'], function(notification) {
-            notification.alert(text[0], text[1], text[2]).then().catch();
-        });
-        return null;
-    }).catch();
+    Promise.resolve([Str.get_string('error', 'core'), errorText, Str.get_string('back', 'core')])
+        .then(text => Notification.alert(text[0], text[1], text[2]))
+        .catch(error => Log.debug(error));
 };
