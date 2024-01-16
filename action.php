@@ -154,7 +154,7 @@ switch ($data->action) {
             'request' => $massactionrequest,
             'instance_id' => $instanceid,
             'return_url' => $returnurl,
-            'sourcecourseid' => $context->instanceid
+            'sourcecourseid' => $context->instanceid,
         ];
 
         $courseselectform = new course_select_form(null, $options);
