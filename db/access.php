@@ -41,9 +41,9 @@ $capabilities = [
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => [
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
+            'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'moodle/site:manageblocks'
+        'clonepermissionsfrom' => 'moodle/site:manageblocks',
     ],
 
     'block/massaction:activityshowhide' => [
@@ -54,7 +54,7 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
 
     'block/massaction:duplicate' => [
@@ -65,7 +65,7 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
 
     'block/massaction:duplicatetocourse' => [
@@ -76,7 +76,7 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
 
     'block/massaction:delete' => [
@@ -87,7 +87,7 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
 
     'block/massaction:indent' => [
@@ -98,7 +98,7 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
 
     'block/massaction:descriptionshowhide' => [
@@ -109,7 +109,7 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
 
     'block/massaction:sendcontentchangednotifications' => [
@@ -120,7 +120,7 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
 
     'block/massaction:movetosection' => [
@@ -131,6 +131,6 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
 ];

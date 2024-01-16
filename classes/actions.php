@@ -185,7 +185,7 @@ class actions {
                 $section = $modinfo->get_section_info($duplicatedmod->sectionnum);
             } else { // Duplicate to a specific section.
                 // Verify target.
-                if (!$section = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $sectionnumber))) {
+                if (!$section = $DB->get_record('course_sections', ['course' => $courseid, 'section' => $sectionnumber])) {
                     throw new moodle_exception('sectionnotexist', 'block_massaction');
                 }
             }
@@ -261,7 +261,7 @@ class actions {
 
             // Update course format setting to prevent new orphaned sections.
             if (isset($targetformatopt['numsections'])) {
-                update_course((object)array('id' => $targetcourseid, 'numsections' => $targetformatopt['numsections'] + 1));
+                update_course((object)['id' => $targetcourseid, 'numsections' => $targetformatopt['numsections'] + 1]);
             }
 
             // Make sure new sectionnum is set accurately.
@@ -286,7 +286,7 @@ class actions {
             // Update course format setting to prevent orphaned sections.
             $targetformatopt = $targetformat->get_format_options();
             if (isset($targetformatopt['numsections']) && $targetformatopt['numsections'] < $srcmaxsectionnum) {
-                update_course((object)array('id' => $targetcourseid, 'numsections' => $srcmaxsectionnum));
+                update_course((object)['id' => $targetcourseid, 'numsections' => $srcmaxsectionnum]);
             }
         }
 
@@ -415,7 +415,7 @@ class actions {
             'instance_id' => $instanceid,
             'return_url' => $returnurl,
             'request' => $massactionrequest,
-            'del_confirm' => 1
+            'del_confirm' => 1,
         ];
         $optionsoncancel = ['id' => $cm->course];
 
@@ -461,7 +461,7 @@ class actions {
                 new moodle_exception('invalidcoursemodule');
             }
 
-            if (!$DB->get_record('course', array('id' => $cm->course))) {
+            if (!$DB->get_record('course', ['id' => $cm->course])) {
                 throw new moodle_exception('invalidcourseid');
             }
 
@@ -575,7 +575,7 @@ class actions {
             }
 
             // Verify target.
-            if (!$section = $DB->get_record('course_sections', array('course' => $cm->course, 'section' => $target))) {
+            if (!$section = $DB->get_record('course_sections', ['course' => $cm->course, 'section' => $target])) {
                 throw new moodle_exception('sectionnotexist', 'block_massaction');
             }
 

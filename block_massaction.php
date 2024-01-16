@@ -177,15 +177,16 @@ class block_massaction extends block_base {
             }
 
             $this->content->text = $OUTPUT->render_from_template('block_massaction/block_massaction',
-                ['actions' => $actions, 'formaction' => $CFG->wwwroot . '/blocks/massaction/action.php',
-                    'instanceid' => $this->instance->id, 'requesturi' => $_SERVER['REQUEST_URI'],
-                    'helpicon' => $OUTPUT->help_icon('usage', 'block_massaction'),
-                    'show_moveto_select' => (has_capability('moodle/course:manageactivities', $context)
-                        && has_capability('block/massaction:movetosection', $context)),
-                    'show_duplicateto_select' => (has_capability('moodle/backup:backuptargetimport', $context) &&
-                        has_capability('moodle/restore:restoretargetimport', $context)
-                        && has_capability('block/massaction:movetosection', $context)),
-                    'sectionselecthelpicon' => $OUTPUT->help_icon('sectionselect', 'block_massaction')
+                ['actions' => $actions,
+                  'formaction' => $CFG->wwwroot . '/blocks/massaction/action.php',
+                  'instanceid' => $this->instance->id, 'requesturi' => $_SERVER['REQUEST_URI'],
+                  'helpicon' => $OUTPUT->help_icon('usage', 'block_massaction'),
+                  'show_moveto_select' => (has_capability('moodle/course:manageactivities', $context) &&
+                                           has_capability('block/massaction:movetosection', $context)),
+                  'show_duplicateto_select' => (has_capability('moodle/backup:backuptargetimport', $context) &&
+                                                has_capability('moodle/restore:restoretargetimport', $context) &&
+                                                has_capability('block/massaction:movetosection', $context)),
+                  'sectionselecthelpicon' => $OUTPUT->help_icon('sectionselect', 'block_massaction'),
                 ]);
         }
         return $this->content;
