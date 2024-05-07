@@ -34,16 +34,16 @@ class filter_sections_different_course {
     use filter_sections_handler;
 
     /** @var bool Determines if the user will be able to keep the original section of a course module when performing some operations. */
-    private bool $keeporiginalsectionallowed = true;
+    private bool $originsectionkept = true;
 
     /** @var bool Determines if the user will be able to create a new section when performing some operations. */
-    private bool $createnewsectionallowed = true;
+    private bool $makesectionallowed = true;
 
     /**
      * Disables the option to keep the original section of a course module.
      */
-    public function disable_keeporiginalsection(): void {
-        $this->keeporiginalsectionallowed = false;
+    public function disable_originsectionkept(): void {
+        $this->originsectionkept = false;
     }
 
     /**
@@ -53,15 +53,15 @@ class filter_sections_different_course {
      *
      * @return bool if the user will be allowed to keep the original section of the course modules
      */
-    public function is_keeporiginalsectionallowed(): bool {
-        return $this->keeporiginalsectionallowed;
+    public function is_originsectionkept(): bool {
+        return $this->originsectionkept;
     }
 
     /**
      * Disables the option to create a new section.
      */
-    public function disable_createnewsection(): void {
-        $this->createnewsectionallowed = false;
+    public function disable_makesection(): void {
+        $this->makesectionallowed = false;
     }
 
     /**
@@ -71,7 +71,7 @@ class filter_sections_different_course {
      *
      * @return bool if the user will be allowed to create a new section
      */
-    public function is_createnewsectionallowed(): bool {
-        return $this->createnewsectionallowed;
+    public function is_makesectionallowed(): bool {
+        return $this->makesectionallowed;
     }
 }

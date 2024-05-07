@@ -106,7 +106,7 @@ class section_select_form extends moodleform {
 
         // Check for permissions.
         $canaddsection = has_capability('moodle/course:update', \context_course::instance($targetcourseid))
-            && $filtersectionshook->is_createnewsectionallowed();
+            && $filtersectionshook->is_makesectionallowed();
 
         // Find maximum section that may need to be created.
         $massactionrequest = $this->_customdata['request'];
@@ -118,7 +118,7 @@ class section_select_form extends moodleform {
 
         $radioarray = [];
         // If user can add sections in target course or don't need to be able to.
-        if (($canaddsection || $srcmaxsectionnum <= $targetsectionnum) && $filtersectionshook->is_keeporiginalsectionallowed()) {
+        if (($canaddsection || $srcmaxsectionnum <= $targetsectionnum) && $filtersectionshook->is_originsectionkept()) {
             // We add the default value: Restore each course module to the section number it has in the source course.
             $radioarray[] = $mform->createElement('radio', 'targetsectionnum', '',
             get_string('keepsectionnum', 'block_massaction'), -1, ['class' => 'mt-2']);

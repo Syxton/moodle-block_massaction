@@ -56,7 +56,6 @@ function xmldb_block_massaction_upgrade($oldversion, $block): bool {
  * @throws dml_exception
  */
 function block_massaction_add_supported_format(string $addformat): void {
-    global $DB;
 
     // Get current settings to update.
     $selectedformats = get_config('block_massaction', 'applicablecourseformats');
@@ -90,7 +89,6 @@ function block_massaction_add_supported_format(string $addformat): void {
  * @throws dml_exception
  */
 function block_massaction_remove_supported_format(string $removeformat): void {
-    global $DB;
 
     // Get current settings to update.
     $selectedformats = get_config('block_massaction', 'applicablecourseformats');

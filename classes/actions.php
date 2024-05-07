@@ -251,7 +251,7 @@ class actions {
         \core\di::get(\core\hook\manager::class)->dispatch($filtersectionshook);
         $filteredsections = $filtersectionshook->get_sectionnums();
 
-        if ($targetsectionnum == -1 && !$filtersectionshook->is_keeporiginalsectionallowed()) {
+        if ($targetsectionnum == -1 && !$filtersectionshook->is_originsectionkept()) {
             // The course modules should be in the same section number as in the original course. However, the hook listener(s)
             // disabled this option, so we cancel the operation.
             // This is only a security measure and should not happen unless someone manipulates the UI.
@@ -265,7 +265,7 @@ class actions {
         }
 
         $canaddsection = has_capability('moodle/course:update', context_course::instance($targetcourseid))
-            && $filtersectionshook->is_createnewsectionallowed();
+            && $filtersectionshook->is_makesectionallowed();
 
         // If a new section (that means that $sectionnum of the user is higher than $targetsectionnum), we create one.
         if ($sectionnum > $targetsectionnum) {
@@ -321,12 +321,12 @@ class actions {
         $errors = [];
         $filtersectionshook = new filter_sections_same_course($sourcecourseid, array_keys($sourcemodinfo->get_section_info_all()));
         \core\di::get(\core\hook\manager::class)->dispatch($filtersectionshook);
-        $sourcefilteredsections = $filtersectionshook->get_sectionnums();
+        $srcfilteredsections = $filtersectionshook->get_sectionnums();
 
         foreach ($idsincourseorder as $cmid) {
             $sourcecm = $sourcemodinfo->get_cm($cmid);
             // Not duplicated if the section is restricted.
-            if (!in_array($sourcecm->sectionnum, $sourcefilteredsections)) {
+            if (!in_array($sourcecm->sectionnum, $srcfilteredsections)) {
                 throw new moodle_exception('sectionrestricted', 'block_massaction', '', $sourcecm->sectionnum);
             }
 
