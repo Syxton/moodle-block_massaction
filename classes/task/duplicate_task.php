@@ -51,18 +51,28 @@ class duplicate_task extends adhoc_task {
         $data = $this->get_custom_data();
         // We use sectionid for duplicating modules in the same course, but sectionnum for duplicating to another course.
         if (!empty($data->courseid)) {
+            // If a courseid has been set we are duplicating to another course.
             $sectionnum = -1;
             if (property_exists($data, 'sectionnum')) {
                 // If no sectionnum has been specified, we default to -1 which means course modules will be restored to the same
                 // section they have in the source course.
                 $sectionnum = $data->sectionnum;
             }
-            // If a courseid has been set we are duplicating to another course.
-            actions::duplicate_to_course((array) $data->modules, $data->courseid, $sectionnum);
+            try {
+                actions::duplicate_to_course((array) $data->modules, $data->courseid, $sectionnum);
+            } catch (moodle_exception $e) {
+                // Add the error to log and complete the task.
+                mtrace($e->getMessage());
+            }
         } else {
             // If no courseid has been set, we just duplicate in the same course.
             $sectionid = empty($data->sectionid) ? false : $data->sectionid;
-            actions::duplicate((array) $data->modules, $sectionid);
+            try {
+                actions::duplicate((array) $data->modules, $sectionid);
+            } catch (moodle_exception $e) {
+                // Add the error to log and complete the task.
+                mtrace($e->getMessage());
+            }
         }
     }
 }
