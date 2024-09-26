@@ -137,6 +137,11 @@ class actions {
         }
 
         $courseid = reset($modules)->course;
+        if (!$DB->record_exists('course', ['id' => $courseid])) {
+            debugging('Could not find the course (id ' . $courseid
+                    . '), has probably been deleted before we can duplicate, exiting cleanly.');
+            return;
+        }
 
         // Needed to set the correct context.
         require_login($courseid);
@@ -221,7 +226,7 @@ class actions {
      * @throws moodle_exception
      */
     public static function duplicate_to_course(array $modules, int $targetcourseid, int $sectionnum = -1): void {
-        global $CFG;
+        global $CFG, $DB;
         require_once($CFG->dirroot . '/course/lib.php');
         require_once($CFG->dirroot . '/lib/modinfolib.php');
         if (empty($modules) || !reset($modules)
@@ -229,6 +234,16 @@ class actions {
             return;
         }
         $sourcecourseid = reset($modules)->course;
+        if (!$DB->record_exists('course', ['id' => $sourcecourseid])) {
+            debugging('Could not find the source course (id ' . $sourcecourseid
+                    . '), has probably been deleted before we can duplicate to this course, exiting cleanly.');
+            return;
+        }
+        if (!$DB->record_exists('course', ['id' => $targetcourseid])) {
+            debugging('Could not find the target course (id ' . $targetcourseid
+                    . '), has probably been deleted before we can duplicate to this course, exiting cleanly.');
+            return;
+        }
         $sourcecoursecontext = context_course::instance($sourcecourseid);
         $targetcoursecontext = context_course::instance($targetcourseid);
 
