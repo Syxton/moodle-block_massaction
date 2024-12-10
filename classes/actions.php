@@ -95,23 +95,32 @@ class actions {
         }
 
         foreach ($modules as $cm) {
+            // Convert boolean to integer.
+            $visibleint = $visible ? 1 : 0;
+            $visibleonpageint = $visibleonpage ? 1 : 0;
+
+            // Stealth activies, if enabled are stored differently in visible and hidden sections.
+            // So we still need to do a little bit of extra work here.
             if ($visible && !$visibleonpage) {
-                // We want to set the visibility to 'available, but hidden', but have to respect the global config and
-                // the course format config.
+                // We want to have an available but hidden activity.
+                // First we need to make sure stealth activities are enabled.
                 if (empty($CFG->allowstealth)) {
                     // We silently ignore this course module it must not be set to 'available, but not visible on course page'.
                     continue;
                 }
+
+                // In a hidden section, show and make available are the same thing.
+                // In a visible section, show has a visibleonpage of 1 and stealth has a visibleonpage of 0.
+                // Gather more information about the module and where it is located.
+                $modinfo = get_fast_modinfo($cm->course);
+                $format = course_get_format($modinfo->get_course());
+                $cm = $modinfo->get_cm($cm->id);
+
+                $allowstealth = $format->allow_stealth_module_visibility($cm, $cm->get_section_info());
+                $visibleonpageint = ($allowstealth) ? 0 : 1;
             }
 
-            // We here also cover the case of a hidden section. In this case moodle only uses the attribute 'visible' to determine,
-            // if a course module is completely hidden ('visible' => 0) or 'available, but not visible on course page'
-            // ('visible' => 1). The attribute 'visibleonpage' is being ignored, so we can pass it along anyway.
-            // Because of this in case of a hidden section both actions ('show' and 'make available') lead to the same result:
-            // 'available, but not visible on course page'.
-
-            $visibleint = $visible ? 1 : 0;
-            $visibleonpageint = $visibleonpage ? 1 : 0;
+            // Set visibility.
             if (set_coursemodule_visible($cm->id, $visibleint, $visibleonpageint)) {
                 course_module_updated::create_from_cm(get_coursemodule_from_id(false, $cm->id))->trigger();
             }
