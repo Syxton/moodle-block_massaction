@@ -52,6 +52,7 @@ final class massaction_test extends advanced_testcase {
      * Prepare testing.
      */
     public function setUp(): void {
+        parent::setUp();
         $generator = $this->getDataGenerator();
         $this->setAdminUser();
         $this->resetAfterTest();
