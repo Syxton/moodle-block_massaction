@@ -115,6 +115,7 @@ export const getSelectedModIds = () => {
             }
         }
     }
+
     return moduleIds;
 };
 
@@ -127,7 +128,6 @@ export const getSelectedModIds = () => {
  */
 export const setSectionSelection = (value, sectionNumber) => {
     const boxIds = [];
-
     if (typeof sectionNumber !== 'undefined' && sectionNumber === constants.SECTION_SELECT_DESCRIPTION_VALUE) {
         // Description placeholder has been selected, do nothing.
         return;
@@ -142,6 +142,7 @@ export const setSectionSelection = (value, sectionNumber) => {
         // We select all boxes of the given section.
         sectionBoxes[sectionNumber].forEach(box => boxIds.push(box.boxId));
     }
+
     // Un/check the boxes.
     for (let i = 0; i < boxIds.length; i++) {
         document.getElementById(boxIds[i]).checked = value;
@@ -158,15 +159,18 @@ const addCheckboxesToDataStructure = () => {
     sections.forEach(section => {
         sectionBoxes[section.number] = [];
         const moduleIds = section.cmlist;
+
         if (moduleIds && moduleIds.length > 0 && moduleIds[0] !== '') {
             const moduleNamesFiltered = moduleNames.filter(modinfo => moduleIds.includes(modinfo.id.toString()));
             moduleNamesFiltered.forEach(modinfo => {
-                // Checkbox should already be created by moodle massactions. Just add it to our data structure.
-                const boxId = usedMoodleCssClasses.BOX_ID_PREFIX + modinfo.id.toString();
-                sectionBoxes[section.number].push({
-                    'moduleId': modinfo.id.toString(),
-                    'boxId': boxId,
-                });
+                if (modinfo.module !== 'subsection') {
+                    // Checkbox should already be created by moodle massactions. Just add it to our data structure.
+                    const boxId = usedMoodleCssClasses.BOX_ID_PREFIX + modinfo.id.toString();
+                    sectionBoxes[section.number].push({
+                        'moduleId': modinfo.id.toString(),
+                        'boxId': boxId,
+                    });
+                }
             });
         }
     });
