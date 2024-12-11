@@ -32,7 +32,6 @@ import events from "core_course/events";
 
 export const usedMoodleCssClasses = {
     ACTIVITY_ITEM: '.activity-item',
-    SECTION_NAME: 'sectionname',
     MODULE_ID_PREFIX: 'module-',
     BOX_ID_PREFIX: 'cmCheckbox'
 };
