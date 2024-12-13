@@ -91,11 +91,12 @@ const rebuildLocalState = () => {
     const state = courseEditor.stateManager.state;
     const exporter = courseEditor.getExporter();
 
-    // Get all modules,sections and subsections in display order.
-    const courselist = exporter.allItemsArray(state);
+    // Get all modules, sections and subsections in display order.
+    const courseItems = exporter.allItemsArray(state);
 
     // Build sections array.
-    courselist.forEach(item => {
+    sections = [];
+    courseItems.forEach(item => {
         if (item.type === 'section') {
             // Get section info.
             let sectioninfo = {...state.section.get(item.id)};
@@ -125,8 +126,8 @@ const rebuildLocalState = () => {
  */
 export const getTitleOfSection = (section) => {
     let title = section.title;
-    if (section.component === "mod_subsection") {
-        title = " - " + title;
+    if (section.component === 'mod_subsection') {
+        title = ' - ' + title;
     }
     return title;
 };
