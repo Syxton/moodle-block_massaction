@@ -22,6 +22,9 @@ Feature: Check if all the different type of actions of the mass actions block wo
       | label    | TC     | 3        | Test Activity3 | Test Activity3         | 2       |
       | page     | TC     | 4        | Test Activity4 | Test page description4 | 4       |
       | assign   | TC     | 5        | Test Activity5 | Test page description5 | 4       |
+    And the following "blocks" exist:
+      | blockname       | contextlevel | reference | pagetypepattern | defaultregion |
+      | recent_activity | Course       | TC        | course-view-*   | side-pre      |
     When I log in as "teacher1"
     And I am on "Test course" course homepage with editing mode on
     And I add the "Mass Actions" block
@@ -42,15 +45,34 @@ Feature: Check if all the different type of actions of the mass actions block wo
     And "Test Activity4" activity should be visible
     When I click on "Enable bulk editing" "button"
     And I click on "Test Activity1" "checkbox"
-    And I click on "Test Activity4" "checkbox"
     And I click on "Make available" "button" in the "Mass Actions" "block"
     Then I should see "Available but not shown on course page" in the "Test Activity1" "activity"
+    When I hide section "4"
+    And I click on "Enable bulk editing" "button"
+    And I click on "Test Activity4" "checkbox"
+    And I click on "Test Activity5" "checkbox"
+    And I click on "Make available" "button" in the "Mass Actions" "block"
     And I should see "Available but not shown on course page" in the "Test Activity4" "activity"
+    And I should see "Available but not shown on course page" in the "Test Activity5" "activity"
+    When I click on "Enable bulk editing" "button"
+    And I click on "Test Activity5" "checkbox"
+    And I click on "Hide" "button" in the "Mass Actions" "block"
+    And "Test Activity5" activity should be hidden
     And I log out
     When I log in as "student1"
     And I am on "Test course" course homepage
-    Then I should not see "Test Activity1"
-    And I should not see "Test Activity4"
+    Then "Test Activity1" activity should be hidden
+    And I should see "Test Activity1" in the "Recent activity" "block"
+    When I click on "Test Activity1" "link" in the "Recent activity" "block"
+    And I should see "Test Activity1"
+    When I click on "TC" "link"
+    And "Test Activity4" activity should be hidden
+    And I should see "Test Activity4" in the "Recent activity" "block"
+    When I click on "Test Activity4" "link" in the "Recent activity" "block"
+    And I should see "Test Activity4"
+    When I click on "TC" "link"
+    And "Test Activity5" activity should be hidden
+    And I should not see "Test Activity5" in the "Recent activity" "block"
 
   @javascript
   Scenario: Check if mass action 'move to section' works

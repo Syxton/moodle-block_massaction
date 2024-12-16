@@ -99,7 +99,7 @@ class actions {
             $visibleint = $visible ? 1 : 0;
             $visibleonpageint = $visibleonpage ? 1 : 0;
 
-            // Stealth activies, if enabled are stored differently in visible and hidden sections.
+            // Stealth activities, if enabled, are stored differently in visible and hidden sections.
             // So we still need to do a little bit of extra work here.
             if ($visible && !$visibleonpage) {
                 // We want to have an available but hidden activity.
@@ -116,8 +116,10 @@ class actions {
                 $format = course_get_format($modinfo->get_course());
                 $cm = $modinfo->get_cm($cm->id);
 
+                // Modules in hidden sections cannot by definition be visible on the course page.
                 $allowstealth = $format->allow_stealth_module_visibility($cm, $cm->get_section_info());
-                $visibleonpageint = ($allowstealth) ? 0 : 1;
+                // Only modules in visible sections need a visibleonpage of 0.
+                $visibleonpageint = $allowstealth ? 0 : 1;
             }
 
             // Set visibility.
