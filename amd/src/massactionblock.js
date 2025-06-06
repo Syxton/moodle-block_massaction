@@ -59,7 +59,8 @@ export const cssIds = {
     DUPLICATETO_SELECT: 'block-massaction-control-section-list-duplicateto',
     HIDDEN_FIELD_REQUEST_INFORMATION: 'block-massaction-control-request',
     ACTION_FORM: 'block-massaction-control-form',
-    SECTION_FILTER_DATA: `[data-block-massaction-data="availabletargetsections"]`
+    SECTION_FILTER_DATA: `[data-block-massaction-data="availabletargetsections"]`,
+    ALLOWED_CMIDS_DATA: `[data-block-massaction-data="allowedcmids"]`
 };
 
 export const constants = {
@@ -183,6 +184,13 @@ const submitAction = (action) => {
         return false;
     }
 
+    const allowedCmids = getAllowedCmids();
+    const restrictedSelected = submitData.moduleIds.filter(id => !allowedCmids.includes(parseInt(id)));
+    if (restrictedSelected.length > 0) {
+        displayError(Str.get_string('restricteditemselected', 'block_massaction'));
+        return false;
+    }
+
     // Prep the submission.
     switch (action) {
         case actions.HIDE:
@@ -223,6 +231,23 @@ const submitAction = (action) => {
     document.getElementById(cssIds.HIDDEN_FIELD_REQUEST_INFORMATION).value = JSON.stringify(submitData);
     document.getElementById(cssIds.ACTION_FORM).submit();
     return true;
+};
+
+/**
+ * Returns an array of allowed course module IDs.
+ *
+ * @return {Array}
+ */
+export const getAllowedCmids = () => {
+    const input = document.querySelector(cssIds.ALLOWED_CMIDS_DATA);
+    if (!input) {
+        return [];
+    }
+
+    const allowedCmidsInfo = input.dataset.allowedcmids || "";
+    const allowedCmids = Array.prototype.map.call(allowedCmidsInfo.split(','), (cmid) => parseInt(cmid));
+
+    return allowedCmids;
 };
 
 const displayError = (errorText) => {

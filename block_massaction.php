@@ -24,6 +24,7 @@
 
 use block_massaction\hook\filter_sections_different_course;
 use block_massaction\hook\filter_sections_same_course;
+use block_massaction\hook\filter_allowed_cm_selection;
 
 /**
  * Configures and displays the block.
@@ -134,6 +135,11 @@ class block_massaction extends block_base {
             \core\di::get(\core\hook\manager::class)->dispatch($filtersectionshook);
             $sectionsavailable = $filtersectionshook->get_sectionnums();
 
+            $allcmids = array_keys($modinfo->get_cms());
+            $filtercmshook = new filter_allowed_cm_selection($COURSE->id, $allcmids);
+            \core\di::get(\core\hook\manager::class)->dispatch($filtercmshook);
+            $allowedcmids = $filtercmshook->cmids;
+
             // Initialize the JS module.
             $this->page->requires->js_call_amd('block_massaction/massactionblock', 'init');
 
@@ -183,19 +189,21 @@ class block_massaction extends block_base {
                     'actiontext' => get_string('action_' . $action, 'block_massaction')];
             }
 
-            $this->content->text = $OUTPUT->render_from_template('block_massaction/block_massaction',
-                ['actions' => $actions,
-                  'formaction' => $CFG->wwwroot . '/blocks/massaction/action.php',
-                  'instanceid' => $this->instance->id, 'requesturi' => $_SERVER['REQUEST_URI'],
-                  'helpicon' => $OUTPUT->help_icon('usage', 'block_massaction'),
-                  'show_moveto_select' => (has_capability('moodle/course:manageactivities', $context) &&
+            $context = [
+                'actions' => $actions,
+                'formaction' => $CFG->wwwroot . '/blocks/massaction/action.php',
+                'instanceid' => $this->instance->id, 'requesturi' => $_SERVER['REQUEST_URI'],
+                'helpicon' => $OUTPUT->help_icon('usage', 'block_massaction'),
+                'show_moveto_select' => (has_capability('moodle/course:manageactivities', $context) &&
                                            has_capability('block/massaction:movetosection', $context)),
-                  'show_duplicateto_select' => (has_capability('moodle/backup:backuptargetimport', $context) &&
+                'show_duplicateto_select' => (has_capability('moodle/backup:backuptargetimport', $context) &&
                                                 has_capability('moodle/restore:restoretargetimport', $context) &&
                                                 has_capability('block/massaction:movetosection', $context)),
-                  'sectionselecthelpicon' => $OUTPUT->help_icon('sectionselect', 'block_massaction'),
+                'sectionselecthelpicon' => $OUTPUT->help_icon('sectionselect', 'block_massaction'),
                     'availabletargetsections' => implode(',', $sectionsavailable),
-                ]);
+                'allowedcmids' => implode(',', $allowedcmids),
+            ];
+            $this->content->text = $OUTPUT->render_from_template('block_massaction/block_massaction', $context);
         }
         return $this->content;
     }
