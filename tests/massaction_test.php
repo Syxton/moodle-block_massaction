@@ -20,7 +20,9 @@ use advanced_testcase;
 use base_plan_exception;
 use base_setting_exception;
 use block_massaction;
+use block_massaction\hook\filter_sections_different_course;
 use coding_exception;
+use core\di;
 use core\event\course_module_updated;
 use core\task\manager;
 use dml_exception;
@@ -859,5 +861,108 @@ final class massaction_test extends advanced_testcase {
             get_fast_modinfo($this->course->id)->get_section_info(3));
         moveto_module(get_fast_modinfo($this->course->id)->get_cm(get_fast_modinfo($this->course->id)->get_sections()[3][3]),
             get_fast_modinfo($this->course->id)->get_section_info(3));
+    }
+
+    /**
+     * Tests the duplication of modules to a course with filter_sections hook.
+     *
+     * @covers \block_massaction\actions::duplicate_to_course
+     * @return void
+     */
+    public function test_duplicate_to_course_with_filter_sections_different_course_hook(): void {
+        $this->resetAfterTest();
+
+        // Callback for filter_sections_different_course hook.
+        $testcallback = function(filter_sections_different_course $hook) {
+            foreach ($hook->get_sectionnums() as $sectionnum) {
+                // Restrict section 3 onward.
+                if ($sectionnum >= 3) {
+                    $hook->remove_sectionnum($sectionnum);
+                }
+            }
+
+            // Disable the options to keep the original section.
+            $hook->disable_originsectionkept();
+
+            // Disable the option to create a new section.
+            $hook->disable_makesection();
+        };
+        $this->redirectHook(filter_sections_different_course::class, $testcallback);
+
+        // Source course.
+        $sourcecourseid = $this->course->id;
+        $sourcecoursemodinfo = get_fast_modinfo($sourcecourseid);
+
+        // Move modules around so that they are not in id order.
+        $this->shuffle_modules();
+
+        // Select some random course modules from different sections to be duplicated.
+        $selectedmoduleids[] = $sourcecoursemodinfo->get_sections()[1][0];
+        $selectedmoduleids[] = $sourcecoursemodinfo->get_sections()[1][1];
+        $selectedmoduleids[] = $sourcecoursemodinfo->get_sections()[3][0];
+        $selectedmoduleids[] = $sourcecoursemodinfo->get_sections()[3][2];
+
+        $selectedmodules = array_filter($this->get_test_course_modules(), function($module) use ($selectedmoduleids) {
+            return in_array($module->id, $selectedmoduleids);
+        });
+
+        // Target course.
+        $targetcourseid = $this->setup_target_course_for_duplicating(3);
+        $targetcoursemodinfo = get_fast_modinfo($targetcourseid);
+        // Four sections (0 1 2 3).
+        $this->assertCount(4, $targetcoursemodinfo->get_section_info_all());
+        // There is no module.
+        $this->assertEmpty($targetcoursemodinfo->get_cms());
+
+        // Test keep origin section.
+        actions::duplicate_to_course($selectedmodules, $targetcourseid, -1);
+        $targetcoursemodinfo = get_fast_modinfo($targetcourseid);
+        // Four sections (0 1 2 3).
+        $this->assertCount(4, $targetcoursemodinfo->get_section_info_all());
+        // There is no module as we cannot keep origin section.
+        $this->assertEmpty($targetcoursemodinfo->get_cms());
+
+        // Test create new section.
+        actions::duplicate_to_course($selectedmodules, $targetcourseid, 4);
+        $targetcoursemodinfo = get_fast_modinfo($targetcourseid);
+        // Still four sections (0 1 2 3).
+        $this->assertCount(4, $targetcoursemodinfo->get_section_info_all());
+        // And still no module.
+        $this->assertEmpty($targetcoursemodinfo->get_cms());
+
+        // Duplicate to section 3, which is restricted by the hook.
+        actions::duplicate_to_course($selectedmodules, $targetcourseid, 3);
+        $targetcoursemodinfo = get_fast_modinfo($targetcourseid);
+        // Still four sections (0 1 2 3).
+        $this->assertCount(4, $targetcoursemodinfo->get_section_info_all());
+        // And still no module.
+        $this->assertEmpty($targetcoursemodinfo->get_cms());
+
+        // Duplicate to section 1, this should work as normal.
+        actions::duplicate_to_course($selectedmodules, $targetcourseid, 1);
+        $targetcoursemodinfo = get_fast_modinfo($targetcourseid);
+        $this->assertCount(4, $targetcoursemodinfo->get_section_info_all());
+        // There should be 4 modules now.
+        $this->assertCount(4, $targetcoursemodinfo->get_cms());
+        // These module ids should be in section 1.
+        $duplicatedmoduleids = $targetcoursemodinfo->get_sections()[1];
+        $this->assertCount(4, $duplicatedmoduleids);
+
+        // Sort name of the modules to be able to compare them.
+        $sourcemodulenames = [];
+        foreach ($selectedmoduleids as $selectedmoduleid) {
+            $sourcemodulenames[] = $sourcecoursemodinfo->get_cm($selectedmoduleid)->name;
+        }
+        sort($sourcemodulenames);
+
+        // Sort name of the duplicated modules to be able to compare them.
+        $duplicatedmodulenames = [];
+        foreach ($duplicatedmoduleids as $moduleid) {
+            $duplicatedmodulenames[] = $targetcoursemodinfo->get_cm($moduleid)->name;
+        }
+        sort($duplicatedmodulenames);
+
+        // The names of the duplicated modules should be the same as the source module names.
+        $this->assertEquals($sourcemodulenames, $duplicatedmodulenames);
     }
 }
