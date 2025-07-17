@@ -270,21 +270,21 @@ class actions {
         $sourcemodinfo = get_fast_modinfo($sourcecourseid);
         $targetmodinfo = get_fast_modinfo($targetcourseid);
         $targetformat = course_get_format($targetmodinfo->get_course());
-        $targetsectionnum = $targetformat->get_last_section_number();
+        $lastsectionnum = $targetformat->get_last_section_number();
 
         $filtersectionshook = new filter_sections_different_course($targetcourseid,
                 array_keys($targetmodinfo->get_section_info_all()));
         \core\di::get(\core\hook\manager::class)->dispatch($filtersectionshook);
         $filteredsections = $filtersectionshook->get_sectionnums();
 
-        if ($targetsectionnum == -1 && !$filtersectionshook->is_originsectionkept()) {
+        if ($sectionnum == -1 && !$filtersectionshook->is_originsectionkept()) {
             // The course modules should be in the same section number as in the original course. However, the hook listener(s)
             // disabled this option, so we cancel the operation.
             // This is only a security measure and should not happen unless someone manipulates the UI.
             return;
         }
 
-        if (!in_array($targetsectionnum, $filteredsections)) {
+        if (($sectionnum >= 0) && ($sectionnum <= $lastsectionnum) && !in_array($sectionnum, $filteredsections)) {
             // The target section number has been filtered by a hook callback, thus must not be used.
             // This is only a security measure and should not happen unless someone manipulates the UI.
             return;
@@ -293,8 +293,8 @@ class actions {
         $canaddsection = has_capability('moodle/course:update', context_course::instance($targetcourseid))
             && $filtersectionshook->is_makesectionallowed();
 
-        // If a new section (that means that $sectionnum of the user is higher than $targetsectionnum), we create one.
-        if ($sectionnum > $targetsectionnum) {
+        // If a new section (that means that $sectionnum of the user is higher than $lastsectionnum), we create one.
+        if ($sectionnum > $lastsectionnum) {
             // No permissions to add section.
             if (!$canaddsection) {
                 return;
@@ -302,7 +302,7 @@ class actions {
 
             $targetformatopt = $targetformat->get_format_options();
             // No course format setting or no orphaned sections exist.
-            if (!isset($targetformatopt['numsections']) || !($targetformatopt['numsections'] < $targetsectionnum)) {
+            if (!isset($targetformatopt['numsections']) || !($targetformatopt['numsections'] < $lastsectionnum)) {
                 course_create_section($targetcourseid);
             }
 
@@ -312,7 +312,7 @@ class actions {
             }
 
             // Make sure new sectionnum is set accurately.
-            $sectionnum = $targetsectionnum + 1;
+            $sectionnum = $lastsectionnum + 1;
         }
 
         if ($sectionnum == -1) {
@@ -323,7 +323,7 @@ class actions {
             }, $modules));
 
             // If target course needs sections added but user does not have permission.
-            if ($srcmaxsectionnum > $targetsectionnum && !$canaddsection) {
+            if ($srcmaxsectionnum > $lastsectionnum && !$canaddsection) {
                 return; // No permission to add section.
             }
 
