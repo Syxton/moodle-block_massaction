@@ -33,6 +33,9 @@ trait filter_sections_handler {
 
     /**
      * Creates the hook object.
+     *
+     * @param int $courseid the course id which is target for section select
+     * @param array $sectionnums the section numbers which are available (so the available sections the hook listeners may filter)
      */
     public function __construct(
             /** @var int the course id which is target for section select. */
