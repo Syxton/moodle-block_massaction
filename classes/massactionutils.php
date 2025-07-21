@@ -25,6 +25,7 @@
 
 namespace block_massaction;
 
+use block_massaction\hook\filter_allowed_cm_selection;
 use backup;
 use backup_controller;
 use base_plan_exception;
@@ -163,5 +164,28 @@ class massactionutils {
             throw new \moodle_exception('duplicatefailed', 'block_massaction', $cm->id);
         }
         return $newcmid;
+    }
+
+    /**
+     * Enforces course module selection restrictions based on hook listeners.
+     *
+     * @param  int $courseid The course ID.
+     * @param  array $selectedmodules The course modules to check.
+     * @throws moodle_exception If any of the selected course module IDs are not allowed.
+     */
+    public static function enforce_cm_restrictions(int $courseid, array $selectedmodules): void {
+        $modinfo = get_fast_modinfo($courseid);
+        $allcmids = array_keys($modinfo->get_cms());
+
+        $filtercmshook = new filter_allowed_cm_selection($courseid, $allcmids);
+        \core\di::get(\core\hook\manager::class)->dispatch($filtercmshook);
+        $allowedcmids = $filtercmshook->cmids;
+
+        // If there's any submitted CMID not in the allowed list, throw an exception.
+        $cmids = array_map(fn($cm) => $cm->id, $selectedmodules);
+        $unauthorisedcmids = array_diff($cmids, $allowedcmids);
+        if (!empty($unauthorisedcmids)) {
+            throw new moodle_exception('restricteditemselected', 'block_massaction');
+        }
     }
 }

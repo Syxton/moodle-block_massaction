@@ -94,6 +94,7 @@ $string['notargetcourseidspecified'] = 'No target course id has been specified';
 $string['pluginname'] = 'Mass Actions';
 $string['privacy:metadata'] = 'This block only offers the possibility to apply standard operations on multiple course modules at the same time.
 Thus, no data is being stored by this block.';
+$string['restricteditemselected'] = 'One or more of the selected activities are restricted and cannot be included in this action.';
 $string['sectionnotexist'] = 'Target section does not exist';
 $string['sectionrestricted'] = 'Source section is restricted: You are not allowed to apply an action to activities in section {$a}.';
 $string['sectionselect'] = 'Section selection';

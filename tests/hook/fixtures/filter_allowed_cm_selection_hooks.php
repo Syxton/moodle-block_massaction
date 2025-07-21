@@ -15,18 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Settings for the massactions block.
+ * Describes hooks used for testing.
  *
+ * @copyright  2025 Monash University
+ * @author     Trisha Milan <trishamilan@catalyst-au.net>
  * @package    block_massaction
- * @copyright  2011 University of Minnesota
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
-defined('MOODLE_INTERNAL') || die;
+require_once(__DIR__ . '/mock_hook_callbacks.php');
 
-$plugin->version = 2024121301;
-$plugin->requires  = 2023100900;
-$plugin->component = 'block_massaction';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v7.4.1';
-$plugin->supported = [404, 405];
+$callbacks = [
+    [
+        'hook' => \block_massaction\hook\filter_allowed_cm_selection::class,
+        'callback' => [
+            \block_massaction\hook\fixtures\mock_hook_callbacks::class,
+            'filter_allowed_cm_selection',
+        ],
+    ],
+];
