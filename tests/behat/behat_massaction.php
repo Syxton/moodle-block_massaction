@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Behat massaction skippable steps definitions.
- *
- * @package    block_massaction
- * @copyright  2021 ISB Bayern
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
 /**
@@ -34,7 +25,6 @@ require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_massaction extends behat_base {
-
     /**
      * Checks that a given course format is installed.
      *
@@ -45,7 +35,7 @@ class behat_massaction extends behat_base {
     public function i_installed_course_format($formatname) {
         $formatplugins = core_plugin_manager::instance()->get_plugins_of_type('format');
         if (!isset($formatplugins[$formatname])) {
-            throw new \Moodle\BehatExtension\Exception\SkippedException;
+            throw new \Moodle\BehatExtension\Exception\SkippedException();
         }
     }
 }

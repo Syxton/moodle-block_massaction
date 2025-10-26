@@ -16,8 +16,6 @@
 
 namespace block_massaction\hook;
 
-use coding_exception;
-
 /**
  * Trait for providing the common methods for the filter sections hooks.
  *
@@ -27,7 +25,6 @@ use coding_exception;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 trait filter_sections_handler {
-
     /** @var array Array of section numbers which originally are available for block_massaction. */
     private readonly array $originalsectionnums;
 
@@ -38,10 +35,10 @@ trait filter_sections_handler {
      * @param array $sectionnums the section numbers which are available (so the available sections the hook listeners may filter)
      */
     public function __construct(
-            /** @var int the course id which is target for section select. */
-            private readonly int $courseid,
-            /** @var array $sectionnums the section numbers which are available (so the available sections the hook listeners may filter) */
-            private array $sectionnums
+        /** @var int the course id which is target for section select. */
+        private readonly int $courseid,
+        /** @var array $sectionnums the section numbers which are available (so the available sections the hook listeners may filter) */
+        private array $sectionnums
     ) {
         $this->originalsectionnums = $this->sectionnums;
     }

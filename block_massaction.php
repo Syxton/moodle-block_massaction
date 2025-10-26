@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Primary block class.
- *
- * @package    block_massaction
- * @copyright  2013 University of Minnesota
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 use block_massaction\hook\filter_sections_different_course;
 use block_massaction\hook\filter_sections_same_course;
 
@@ -32,7 +24,6 @@ use block_massaction\hook\filter_sections_same_course;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_massaction extends block_base {
-
     /**
      * Initialize the plugin. This method is being called by the parent constructor by default.
      */
@@ -140,8 +131,10 @@ class block_massaction extends block_base {
             $context = context_course::instance($COURSE->id);
             // Actions to be rendered later on.
             $actionicons = [];
-            if (has_capability('moodle/course:activityvisibility', $context)
-                   && has_capability('block/massaction:activityshowhide', $blockcontext)) {
+            if (
+                has_capability('moodle/course:activityvisibility', $context)
+                && has_capability('block/massaction:activityshowhide', $blockcontext)
+            ) {
                 // As we want to use this symbol for the *operation*, not the state, we switch the icons hide/show.
                 $actionicons['show'] = 't/hide';
                 $actionicons['hide'] = 't/show';
@@ -149,21 +142,27 @@ class block_massaction extends block_base {
                     $actionicons['makeavailable'] = 't/block';
                 }
             }
-            if (has_capability('moodle/backup:backuptargetimport', $context)
-                    && has_capability('moodle/restore:restoretargetimport', $context)
-                    && has_capability('block/massaction:duplicate', $blockcontext)) {
+            if (
+                has_capability('moodle/backup:backuptargetimport', $context)
+                && has_capability('moodle/restore:restoretargetimport', $context)
+                && has_capability('block/massaction:duplicate', $blockcontext)
+            ) {
                 $actionicons['duplicate'] = 't/copy';
             }
-            if (has_capability('moodle/backup:backuptargetimport', $context)
-                    && has_capability('block/massaction:duplicatetocourse', $blockcontext)) {
+            if (
+                has_capability('moodle/backup:backuptargetimport', $context)
+                && has_capability('block/massaction:duplicatetocourse', $blockcontext)
+            ) {
                 $actionicons['duplicatetocourse'] = 't/copy';
             }
             if (has_capability('moodle/course:manageactivities', $context)) {
                 if (has_capability('block/massaction:delete', $blockcontext)) {
                     $actionicons['delete'] = 't/delete';
                 }
-                if (course_get_format($COURSE->id)->uses_indentation()
-                        && has_capability('block/massaction:indent', $blockcontext)) {
+                if (
+                    course_get_format($COURSE->id)->uses_indentation()
+                    && has_capability('block/massaction:indent', $blockcontext)
+                ) {
                     // From Moodle 4.0 on the course format has to declare if it supports indentation or not.
                     $actionicons['moveright'] = 't/right';
                     $actionicons['moveleft'] = 't/left';
@@ -183,19 +182,26 @@ class block_massaction extends block_base {
                     'actiontext' => get_string('action_' . $action, 'block_massaction')];
             }
 
-            $this->content->text = $OUTPUT->render_from_template('block_massaction/block_massaction',
-                ['actions' => $actions,
-                  'formaction' => $CFG->wwwroot . '/blocks/massaction/action.php',
-                  'instanceid' => $this->instance->id, 'requesturi' => $_SERVER['REQUEST_URI'],
-                  'helpicon' => $OUTPUT->help_icon('usage', 'block_massaction'),
-                  'show_moveto_select' => (has_capability('moodle/course:manageactivities', $context) &&
-                                           has_capability('block/massaction:movetosection', $context)),
-                  'show_duplicateto_select' => (has_capability('moodle/backup:backuptargetimport', $context) &&
-                                                has_capability('moodle/restore:restoretargetimport', $context) &&
-                                                has_capability('block/massaction:movetosection', $context)),
-                  'sectionselecthelpicon' => $OUTPUT->help_icon('sectionselect', 'block_massaction'),
+            $this->content->text = $OUTPUT->render_from_template(
+                'block_massaction/block_massaction',
+                [
+                    'actions' => $actions,
+                    'formaction' => $CFG->wwwroot . '/blocks/massaction/action.php',
+                    'instanceid' => $this->instance->id, 'requesturi' => $_SERVER['REQUEST_URI'],
+                    'helpicon' => $OUTPUT->help_icon('usage', 'block_massaction'),
+                    'show_moveto_select' => (
+                        has_capability('moodle/course:manageactivities', $context) &&
+                        has_capability('block/massaction:movetosection', $context)
+                    ),
+                    'show_duplicateto_select' => (
+                        has_capability('moodle/backup:backuptargetimport', $context) &&
+                        has_capability('moodle/restore:restoretargetimport', $context) &&
+                        has_capability('block/massaction:movetosection', $context)
+                    ),
+                    'sectionselecthelpicon' => $OUTPUT->help_icon('sectionselect', 'block_massaction'),
                     'availabletargetsections' => implode(',', $sectionsavailable),
-                ]);
+                ]
+            );
         }
         return $this->content;
     }

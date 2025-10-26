@@ -70,9 +70,10 @@ function block_massaction_add_supported_format(string $addformat): void {
 
     $supportedformats = [];
     foreach ($plugins as $format => $name) {
-        if (isset($name) &&
-            (in_array($format, $selectedformats) ||
-                $format === $addformat)) {
+        if (
+            isset($name)
+            && (in_array($format, $selectedformats) || $format === $addformat)
+        ) {
             $supportedformats[$format] = 1;
         }
     }
@@ -103,9 +104,11 @@ function block_massaction_remove_supported_format(string $removeformat): void {
 
     $supportedformats = [];
     foreach ($plugins as $format => $name) {
-        if (isset($name) &&
-            in_array($format, $selectedformats) &&
-            $format !== $removeformat) {
+        if (
+            isset($name)
+            && in_array($format, $selectedformats)
+            && $format !== $removeformat
+        ) {
             $supportedformats[$format] = 1;
         }
     }

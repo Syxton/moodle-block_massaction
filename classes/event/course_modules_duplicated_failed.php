@@ -28,7 +28,6 @@ use core\event\base;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_modules_duplicated_failed extends base {
-
     /**
      * Initialise required event data properties.
      */
@@ -52,11 +51,13 @@ class course_modules_duplicated_failed extends base {
      * @return string
      */
     public function get_description(): string {
-        return get_string('event:duplicated_failed_description',
-                          'block_massaction',
-                          ['cmid' => $this->other['cmid'],
-                           'error' => $this->other['error'],
-                          ]);
+        return get_string(
+            'event:duplicated_failed_description',
+            'block_massaction',
+            ['cmid' => $this->other['cmid'],
+                'error' => $this->other['error'],
+            ]
+        );
     }
 
     /**

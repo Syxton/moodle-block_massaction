@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * actions class: Utility class providing methods for actions performed by the massaction block.
- *
- * @package    block_massaction
- * @copyright  2021 ISB Bayern
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace block_massaction;
 
 use base_plan_exception;
@@ -43,7 +34,7 @@ use required_capability_exception;
 use restore_controller_exception;
 
 /**
- * Block actions class.
+ * actions class: Utility class providing methods for actions performed by the massaction block.
  *
  * @copyright  2021 ISB Bayern
  * @author     Philipp Memmel
@@ -142,15 +133,18 @@ class actions {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/course/lib.php');
         require_once($CFG->dirroot . '/lib/modinfolib.php');
-        if (empty($modules) || !reset($modules)
-            || !property_exists(reset($modules), 'course')) {
+        if (
+            empty($modules)
+            || !reset($modules)
+            || !property_exists(reset($modules), 'course')
+        ) {
             return;
         }
 
         $courseid = reset($modules)->course;
         if (!$DB->record_exists('course', ['id' => $courseid])) {
             debugging('Could not find the course (id ' . $courseid
-                    . '), has probably been deleted before we can duplicate, exiting cleanly.');
+                . '), has probably been deleted before we can duplicate, exiting cleanly.');
             return;
         }
 
@@ -240,31 +234,42 @@ class actions {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/course/lib.php');
         require_once($CFG->dirroot . '/lib/modinfolib.php');
-        if (empty($modules) || !reset($modules)
-            || !property_exists(reset($modules), 'course')) {
+        if (
+            empty($modules)
+            || !reset($modules)
+            || !property_exists(reset($modules), 'course')
+        ) {
             return;
         }
         $sourcecourseid = reset($modules)->course;
         if (!$DB->record_exists('course', ['id' => $sourcecourseid])) {
             debugging('Could not find the source course (id ' . $sourcecourseid
-                    . '), has probably been deleted before we can duplicate to this course, exiting cleanly.');
+                . '), has probably been deleted before we can duplicate to this course, exiting cleanly.');
             return;
         }
         if (!$DB->record_exists('course', ['id' => $targetcourseid])) {
             debugging('Could not find the target course (id ' . $targetcourseid
-                    . '), has probably been deleted before we can duplicate to this course, exiting cleanly.');
+                . '), has probably been deleted before we can duplicate to this course, exiting cleanly.');
             return;
         }
         $sourcecoursecontext = context_course::instance($sourcecourseid);
         $targetcoursecontext = context_course::instance($targetcourseid);
 
         if (!has_capability('moodle/backup:backuptargetimport', $sourcecoursecontext)) {
-            throw new required_capability_exception($sourcecoursecontext,
-                'moodle/backup:backuptargetimport', 'nocaptobackup', 'block_massaction');
+            throw new required_capability_exception(
+                $sourcecoursecontext,
+                'moodle/backup:backuptargetimport',
+                'nocaptobackup',
+                'block_massaction'
+            );
         }
         if (!has_capability('moodle/restore:restoretargetimport', $targetcoursecontext)) {
-            throw new required_capability_exception($targetcoursecontext,
-                'moodle/restore:restoretargetimport', 'nocaptorestore', 'block_massaction');
+            throw new required_capability_exception(
+                $targetcoursecontext,
+                'moodle/restore:restoretargetimport',
+                'nocaptorestore',
+                'block_massaction'
+            );
         }
 
         $sourcemodinfo = get_fast_modinfo($sourcecourseid);
@@ -272,8 +277,10 @@ class actions {
         $targetformat = course_get_format($targetmodinfo->get_course());
         $lastsectionnum = $targetformat->get_last_section_number();
 
-        $filtersectionshook = new filter_sections_different_course($targetcourseid,
-                array_keys($targetmodinfo->get_section_info_all()));
+        $filtersectionshook = new filter_sections_different_course(
+            $targetcourseid,
+            array_keys($targetmodinfo->get_section_info_all())
+        );
         \core\di::get(\core\hook\manager::class)->dispatch($filtersectionshook);
         $filteredsections = $filtersectionshook->get_sectionnums();
 
@@ -308,7 +315,7 @@ class actions {
 
             // Update course format setting to prevent new orphaned sections.
             if (isset($targetformatopt['numsections'])) {
-                update_course((object)['id' => $targetcourseid, 'numsections' => $targetformatopt['numsections'] + 1]);
+                update_course((object) ['id' => $targetcourseid, 'numsections' => $targetformatopt['numsections'] + 1]);
             }
 
             // Make sure new sectionnum is set accurately.
@@ -318,7 +325,7 @@ class actions {
         if ($sectionnum == -1) {
             // In case no target section is specified we make sure that enough sections in the target course exist before
             // duplicating, so each course module will be restored to the section number it has in the source course.
-            $srcmaxsectionnum = max(array_map(function($mod) use ($sourcemodinfo) {
+            $srcmaxsectionnum = max(array_map(function ($mod) use ($sourcemodinfo) {
                 return $sourcemodinfo->get_cm($mod->id)->sectionnum;
             }, $modules));
 
@@ -333,7 +340,7 @@ class actions {
             // Update course format setting to prevent orphaned sections.
             $targetformatopt = $targetformat->get_format_options();
             if (isset($targetformatopt['numsections']) && $targetformatopt['numsections'] < $srcmaxsectionnum) {
-                update_course((object)['id' => $targetcourseid, 'numsections' => $srcmaxsectionnum]);
+                update_course((object) ['id' => $targetcourseid, 'numsections' => $srcmaxsectionnum]);
             }
         }
 
@@ -357,17 +364,21 @@ class actions {
             }
 
             try {
-                $duplicatedmod = massactionutils::duplicate_cm_to_course($targetmodinfo->get_course(),
-                    $sourcemodinfo->get_cm($cmid));
+                $duplicatedmod = massactionutils::duplicate_cm_to_course(
+                    $targetmodinfo->get_course(),
+                    $sourcemodinfo->get_cm($cmid)
+                );
             } catch (\Exception $e) {
                 $errors[$cmid] = 'cmid:' . $cmid . '(' . $e->getMessage() . ')';
-                $event = \block_massaction\event\course_modules_duplicated_failed::create([
-                    'context' => \context_course::instance($sourcecourseid),
-                    'other' => [
-                        'cmid' => $cmid,
-                        'error' => $errors[$cmid],
-                    ],
-                ]);
+                $event = \block_massaction\event\course_modules_duplicated_failed::create(
+                    [
+                        'context' => \context_course::instance($sourcecourseid),
+                        'other' => [
+                            'cmid' => $cmid,
+                            'error' => $errors[$cmid],
+                        ],
+                    ]
+                );
                 $event->trigger();
                 continue;
             }
@@ -439,8 +450,12 @@ class actions {
      * @throws require_login_exception
      * @throws required_capability_exception
      */
-    public static function print_deletion_confirmation(array $modules, string $massactionrequest,
-        int $instanceid, string $returnurl): void {
+    public static function print_deletion_confirmation(
+        array $modules,
+        string $massactionrequest,
+        int $instanceid,
+        string $returnurl
+    ): void {
         global $DB, $PAGE, $OUTPUT, $CFG;
         $modulelist = [];
 
@@ -478,16 +493,24 @@ class actions {
         echo $OUTPUT->header();
 
         // Render the content.
-        $content = $OUTPUT->render_from_template('block_massaction/deletionconfirm',
-            ['modules' => $modulelist]);
+        $content = $OUTPUT->render_from_template(
+            'block_massaction/deletionconfirm',
+            ['modules' => $modulelist]
+        );
 
         echo $OUTPUT->box_start('noticebox');
         $formcontinue =
-            new \single_button(new \moodle_url("{$CFG->wwwroot}/blocks/massaction/action.php", $optionsonconfirm),
-                get_string('delete'), 'post');
+            new \single_button(
+                new \moodle_url("{$CFG->wwwroot}/blocks/massaction/action.php", $optionsonconfirm),
+                get_string('delete'),
+                'post'
+            );
         $formcancel =
-            new \single_button(new \moodle_url("{$CFG->wwwroot}/course/view.php?id={$course->id}", $optionsoncancel),
-                get_string('cancel'), 'get');
+            new \single_button(
+                new \moodle_url("{$CFG->wwwroot}/course/view.php?id={$course->id}", $optionsoncancel),
+                get_string('cancel'),
+                'get'
+            );
         echo $OUTPUT->confirm($content, $formcontinue, $formcancel);
         echo $OUTPUT->box_end();
         echo $OUTPUT->footer();
@@ -591,7 +614,8 @@ class actions {
                 // being sent. As all modules we handle with block_massaction already exist we can safely set 'update' to 1 which
                 // means that the message will read 'course module updated' instead of 'new course module added'.
                 $adhoctask->set_custom_data(
-                    ['update' => 1, 'cmid' => $cm->id, 'courseid' => $course->id, 'userfrom' => $USER->id]);
+                    ['update' => 1, 'cmid' => $cm->id, 'courseid' => $course->id, 'userfrom' => $USER->id]
+                );
                 $adhoctask->set_component('course');
                 manager::queue_adhoc_task($adhoctask, true);
             }
@@ -616,8 +640,8 @@ class actions {
         if (!empty($modules)) {
             $courseid = reset($modules)->course;
             $filtersectionshook = new filter_sections_same_course(
-                    $courseid,
-                    array_keys(get_fast_modinfo($courseid)->get_section_info_all())
+                $courseid,
+                array_keys(get_fast_modinfo($courseid)->get_section_info_all())
             );
             \core\di::get(\core\hook\manager::class)->dispatch($filtersectionshook);
         }
@@ -666,11 +690,20 @@ class actions {
         }
 
         // We filter all modules: After that only the modules which should be duplicated are being left.
-        $idsincourseorder = array_filter($idsincourseorder, function($cmid) use ($modules) {
-            return in_array($cmid, array_map(function($cm) {
-                return $cm->id;
-            }, $modules));
-        });
+        $idsincourseorder = array_filter(
+            $idsincourseorder,
+            function ($cmid) use ($modules) {
+                return in_array(
+                    $cmid,
+                    array_map(
+                        function ($cm) {
+                            return $cm->id;
+                        },
+                        $modules
+                    )
+                );
+            }
+        );
 
         return $idsincourseorder;
     }

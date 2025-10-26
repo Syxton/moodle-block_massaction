@@ -26,17 +26,23 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($hassiteconfig) {
-
-    $ADMIN->add('blocksettings', new admin_category('block_massaction_settings',
-        new lang_string('pluginname', 'block_massaction')));
+    $ADMIN->add(
+        'blocksettings',
+        new admin_category(
+            'block_massaction_settings',
+            new lang_string('pluginname', 'block_massaction')
+        )
+    );
 
     if ($ADMIN->fulltree) {
-        $settings->add(new admin_setting_configtext(
-            'block_massaction/duplicatemaxactivities',
-            new lang_string('duplicatemaxactivities', 'block_massaction'),
-            new lang_string('duplicatemaxactivities_description', 'block_massaction'),
-            5
-        ));
+        $settings->add(
+            new admin_setting_configtext(
+                'block_massaction/duplicatemaxactivities',
+                new lang_string('duplicatemaxactivities', 'block_massaction'),
+                new lang_string('duplicatemaxactivities_description', 'block_massaction'),
+                5
+            )
+        );
 
         $pluginmanager = \core_plugin_manager::instance();
         $plugins = [];
@@ -47,26 +53,30 @@ if ($hassiteconfig) {
             $plugins[$pluginname] = new lang_string('pluginname', 'format_' . $pluginname);
         }
         // Sort alphabetically. Custom sort function needed, because lang_string is an object.
-        uasort($plugins, function($a, $b) {
+        uasort($plugins, function ($a, $b) {
             return strcmp($a->out(), $b->out());
         });
 
         // These are the formats supported by the maintainer.
         $supportedformatsbydefault = ['weeks' => 1, 'topics' => 1, 'topcoll' => 1, 'onetopic' => 1, 'grid' => 1, 'tiles' => 1];
 
-        $settings->add(new admin_setting_configmulticheckbox(
-            'block_massaction/applicablecourseformats',
-            new lang_string('applicablecourseformats', 'block_massaction'),
-            new lang_string('applicablecourseformats_description', 'block_massaction'),
-            $supportedformatsbydefault,
-            $plugins)
+        $settings->add(
+            new admin_setting_configmulticheckbox(
+                'block_massaction/applicablecourseformats',
+                new lang_string('applicablecourseformats', 'block_massaction'),
+                new lang_string('applicablecourseformats_description', 'block_massaction'),
+                $supportedformatsbydefault,
+                $plugins
+            )
         );
 
-        $settings->add(new admin_setting_configcheckbox(
-            'block_massaction/limittoenrolled',
-            new lang_string('limittoenrolled', 'block_massaction'),
-            new lang_string('limittoenrolled_description', 'block_massaction'),
-            1)
+        $settings->add(
+            new admin_setting_configcheckbox(
+                'block_massaction/limittoenrolled',
+                new lang_string('limittoenrolled', 'block_massaction'),
+                new lang_string('limittoenrolled_description', 'block_massaction'),
+                1
+            )
         );
     }
 }

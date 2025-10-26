@@ -43,7 +43,6 @@ require_login();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_select_form extends moodleform {
-
     /**
      * Form definition.
      */
@@ -64,9 +63,16 @@ class course_select_form extends moodleform {
         $mform->addElement('header', 'choosetargetcourse', get_string('choosetargetcourse', 'block_massaction'));
 
         $limittoenrolled = !empty(get_config('block_massaction', 'limittoenrolled'));
-        $mform->addElement('course', 'targetcourseid', get_string('choosecoursetoduplicateto', 'block_massaction'),
-            ['limittoenrolled' => $limittoenrolled, 'exclude' => $sourcecourseid,
-                'requiredcapabilities' => ['moodle/restore:restoretargetimport']]);
+        $mform->addElement(
+            'course',
+            'targetcourseid',
+            get_string('choosecoursetoduplicateto', 'block_massaction'),
+            [
+                'limittoenrolled' => $limittoenrolled,
+                'exclude' => $sourcecourseid,
+                'requiredcapabilities' => ['moodle/restore:restoretargetimport'],
+            ]
+        );
 
         $this->add_action_buttons(true, get_string('confirmcourseselect', 'block_massaction'));
     }

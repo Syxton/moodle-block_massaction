@@ -46,7 +46,6 @@ require_login();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class section_select_form extends moodleform {
-
     /**
      * Form definition.
      */
@@ -67,13 +66,21 @@ class section_select_form extends moodleform {
         $mform->addElement('header', 'choosetargetsection', get_string('choosetargetsection', 'block_massaction'));
 
         if (empty($targetcourseid)) {
-            redirect($this->_customdata['return_url'], get_string('notargetcourseidspecified', 'block_massaction'),
-                null, notification::NOTIFY_ERROR);
+            redirect(
+                $this->_customdata['return_url'],
+                get_string('notargetcourseidspecified', 'block_massaction'),
+                null,
+                notification::NOTIFY_ERROR
+            );
         }
 
         if (empty($sourcecourseid)) {
-            redirect($this->_customdata['return_url'], get_string('sourcecourseidlost', 'block_massaction'),
-                null, notification::NOTIFY_ERROR);
+            redirect(
+                $this->_customdata['return_url'],
+                get_string('sourcecourseidlost', 'block_massaction'),
+                null,
+                notification::NOTIFY_ERROR
+            );
         }
 
         $sourcecoursemodinfo = get_fast_modinfo($sourcecourseid);
@@ -89,7 +96,7 @@ class section_select_form extends moodleform {
         }
 
         // We create an array with the sections. If a section does not have a name, we name it 'Section $sectionnumber'.
-        $targetsections = array_map(function($section) {
+        $targetsections = array_map(function ($section) {
             $name = $section->name;
             if (empty($section->name)) {
                 $name = get_string('section') . ' ' . $section->section;
@@ -112,7 +119,7 @@ class section_select_form extends moodleform {
         $massactionrequest = $this->_customdata['request'];
         $data = \block_massaction\massactionutils::extract_modules_from_json($massactionrequest);
         $modules = $data->modulerecords;
-        $srcmaxsectionnum = max(array_map(function($mod) use ($sourcecoursemodinfo) {
+        $srcmaxsectionnum = max(array_map(function ($mod) use ($sourcecoursemodinfo) {
             return $sourcecoursemodinfo->get_cm($mod->id)->sectionnum;
         }, $modules));
 
@@ -120,8 +127,14 @@ class section_select_form extends moodleform {
         // If user can add sections in target course or don't need to be able to.
         if (($canaddsection || $srcmaxsectionnum <= $targetsectionnum) && $filtersectionshook->is_originsectionkept()) {
             // We add the default value: Restore each course module to the section number it has in the source course.
-            $radioarray[] = $mform->createElement('radio', 'targetsectionnum', '',
-            get_string('keepsectionnum', 'block_massaction'), -1, ['class' => 'mt-2']);
+            $radioarray[] = $mform->createElement(
+                'radio',
+                'targetsectionnum',
+                '',
+                get_string('keepsectionnum', 'block_massaction'),
+                -1,
+                ['class' => 'mt-2']
+            );
         }
 
         // Now add the sections of the target course.
@@ -130,20 +143,37 @@ class section_select_form extends moodleform {
             if (!in_array($sectionnum, $filteredsections)) {
                 $attributes['disabled'] = 'disabled';
             }
-            $radioarray[] = $mform->createElement('radio', 'targetsectionnum',
-                '', $sectionname, $sectionnum, $attributes);
+            $radioarray[] = $mform->createElement(
+                'radio',
+                'targetsectionnum',
+                '',
+                $sectionname,
+                $sectionnum,
+                $attributes
+            );
         }
 
         if ($canaddsection) {
             if (($targetsectionnum + 1) <= $targetformat->get_max_sections()) {
                 // New section option.
-                $radioarray[] = $mform->createElement('radio', 'targetsectionnum', '',
-                    get_string('newsection', 'block_massaction'), $targetsectionnum + 1, ['class' => 'mt-2']);
+                $radioarray[] = $mform->createElement(
+                    'radio',
+                    'targetsectionnum',
+                    '',
+                    get_string('newsection', 'block_massaction'),
+                    $targetsectionnum + 1,
+                    ['class' => 'mt-2']
+                );
             }
         }
 
-        $mform->addGroup($radioarray, 'sections', get_string('choosesectiontoduplicateto', 'block_massaction'),
-            '<br/>', false);
+        $mform->addGroup(
+            $radioarray,
+            'sections',
+            get_string('choosesectiontoduplicateto', 'block_massaction'),
+            '<br/>',
+            false
+        );
         $mform->setDefault('targetsectionnum', -1);
 
         $this->add_action_buttons(true, get_string('confirmsectionselect', 'block_massaction'));
