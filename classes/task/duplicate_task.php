@@ -25,6 +25,7 @@ use restore_controller_exception;
 /**
  * duplicate_task class: Adhoc task to process duplicating course modules from the block_massaction plugin.
  *
+ * @package    block_massaction
  * @copyright  2022 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

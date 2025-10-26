@@ -20,6 +20,7 @@ use block_massaction\hook\filter_sections_same_course;
 /**
  * Configures and displays the block.
  *
+ * @package    block_massaction
  * @copyright  2013 University of Minnesota
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -36,6 +36,7 @@ use restore_controller_exception;
 /**
  * actions class: Utility class providing methods for actions performed by the massaction block.
  *
+ * @package    block_massaction
  * @copyright  2021 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

@@ -31,6 +31,7 @@ use stdClass;
 /**
  * Utility class providing methods for generating data used by the massaction block.
  *
+ * @package    block_massaction
  * @copyright  2021 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

@@ -19,6 +19,7 @@ namespace block_massaction\privacy;
 /**
  * Privacy Subsystem for blocks_massaction implementing null_provider.
  *
+ * @package    block_massaction
  * @copyright  2021 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
