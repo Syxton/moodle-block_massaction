@@ -154,17 +154,15 @@ class section_select_form extends moodleform {
         }
 
         if ($canaddsection) {
-            if (($targetsectionnum + 1) <= $targetformat->get_max_sections()) {
-                // New section option.
-                $radioarray[] = $mform->createElement(
-                    'radio',
-                    'targetsectionnum',
-                    '',
-                    get_string('newsection', 'block_massaction'),
-                    $targetsectionnum + 1,
-                    ['class' => 'mt-2']
-                );
-            }
+            // New section option.
+            $radioarray[] = $mform->createElement(
+                'radio',
+                'targetsectionnum',
+                '',
+                get_string('newsection', 'block_massaction'),
+                $targetsectionnum + 1,
+                ['class' => 'mt-2']
+            );
         }
 
         $mform->addGroup(
