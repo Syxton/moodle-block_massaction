@@ -16,8 +16,6 @@
 
 namespace block_massaction\hook;
 
-defined('MOODLE_INTERNAL') || die();
-
 #[\core\attribute\label('Hook dispatched when block_massaction is duplicating or moving activities inside a course. '
         . 'The hook provides ways to customize which sections the user can duplicate/move activities to.')]
 #[\core\attribute\tags('block_massaction')]
@@ -30,8 +28,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class filter_sections_same_course {
-
     // We use the trait here, because inheritance is not recommended for hooks.
     use filter_sections_handler;
-
 }

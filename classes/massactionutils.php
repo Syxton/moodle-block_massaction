@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * massactionutils class: Utility class providing methods for generating data used by the massaction block.
- *
- * @package    block_massaction
- * @copyright  2021 ISB Bayern
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace block_massaction;
 
 use backup;
@@ -38,14 +29,14 @@ use restore_controller_exception;
 use stdClass;
 
 /**
- * Mass action utility functions class.
+ * Utility class providing methods for generating data used by the massaction block.
  *
+ * @package    block_massaction
  * @copyright  2021 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class massactionutils {
-
     /**
      * Method to extract the modules from the request JSON which is sent by the block_massaction JS module to the backend.
      *
@@ -65,9 +56,11 @@ class massactionutils {
             throw new moodle_exception('jsonerror', 'block_massaction');
         }
 
-        $modulerecords = $DB->get_records_select('course_modules',
+        $modulerecords = $DB->get_records_select(
+            'course_modules',
             'id IN (' . implode(',', array_fill(0, count($data->moduleIds), '?')) . ')',
-            $data->moduleIds);
+            $data->moduleIds
+        );
 
         foreach ($data->moduleIds as $modid) {
             if (!isset($modulerecords[$modid])) {
@@ -114,8 +107,14 @@ class massactionutils {
 
         // Backup the activity.
 
-        $bc = new backup_controller(backup::TYPE_1ACTIVITY, $cm->id, backup::FORMAT_MOODLE,
-            backup::INTERACTIVE_NO, backup::MODE_IMPORT, $USER->id);
+        $bc = new backup_controller(
+            backup::TYPE_1ACTIVITY,
+            $cm->id,
+            backup::FORMAT_MOODLE,
+            backup::INTERACTIVE_NO,
+            backup::MODE_IMPORT,
+            $USER->id
+        );
 
         $backupid = $bc->get_backupid();
         $backupbasepath = $bc->get_plan()->get_basepath();
@@ -125,8 +124,14 @@ class massactionutils {
         $bc->destroy();
 
         // Restore the backup immediately.
-        $rc = new restore_controller($backupid, $course->id,
-            backup::INTERACTIVE_NO, backup::MODE_IMPORT, $USER->id, backup::TARGET_CURRENT_ADDING);
+        $rc = new restore_controller(
+            $backupid,
+            $course->id,
+            backup::INTERACTIVE_NO,
+            backup::MODE_IMPORT,
+            $USER->id,
+            backup::TARGET_CURRENT_ADDING
+        );
 
         // Make sure that the restore_general_groups setting is always enabled when duplicating an activity.
         $plan = $rc->get_plan();

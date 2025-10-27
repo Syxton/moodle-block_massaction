@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * duplicate_task class: Adhoc task to process duplicating course modules from the block_massaction plugin.
- *
- * @package    block_massaction
- * @copyright  2022 ISB Bayern
- * @author     Philipp Memmel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace block_massaction\task;
 
 use block_massaction\actions;
@@ -32,14 +23,14 @@ use require_login_exception;
 use restore_controller_exception;
 
 /**
- * Duplicate task class.
+ * duplicate_task class: Adhoc task to process duplicating course modules from the block_massaction plugin.
  *
+ * @package    block_massaction
  * @copyright  2022 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class duplicate_task extends adhoc_task {
-
     /**
      * Executes the duplication of multiple course modules.
      *

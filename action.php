@@ -88,8 +88,12 @@ switch ($data->action) {
             $duplicatetask->set_userid($USER->id);
             $duplicatetask->set_custom_data(['modules' => $modulerecords]);
             manager::queue_adhoc_task($duplicatetask);
-            redirect($returnurl, get_string('backgroundtaskinformation', 'block_massaction'), null,
-                notification::NOTIFY_SUCCESS);
+            redirect(
+                $returnurl,
+                get_string('backgroundtaskinformation', 'block_massaction'),
+                null,
+                notification::NOTIFY_SUCCESS
+            );
         } else {
             block_massaction\actions::duplicate($modulerecords);
         }
@@ -139,8 +143,12 @@ switch ($data->action) {
             $duplicatetask->set_userid($USER->id);
             $duplicatetask->set_custom_data(['modules' => $modulerecords, 'sectionid' => $data->duplicateToTarget]);
             manager::queue_adhoc_task($duplicatetask);
-            redirect($returnurl, get_string('backgroundtaskinformation', 'block_massaction'), null,
-                notification::NOTIFY_SUCCESS);
+            redirect(
+                $returnurl,
+                get_string('backgroundtaskinformation', 'block_massaction'),
+                null,
+                notification::NOTIFY_SUCCESS
+            );
         } else {
             block_massaction\actions::duplicate($modulerecords, $data->duplicateToTarget);
         }
@@ -178,7 +186,6 @@ switch ($data->action) {
                 actions::print_course_select_form($courseselectform);
                 break;
             } else if ($data = $sectionselectform->get_data()) {
-
                 // We validate the section number and default to 'same section than source course' if it is not a proper section
                 // number.
                 $targetsectionnum = property_exists($data, 'targetsectionnum') && is_numeric($data->targetsectionnum)
@@ -190,15 +197,22 @@ switch ($data->action) {
                     $duplicatetask->set_custom_data(['modules' => $modulerecords, 'sectionnum' => $targetsectionnum,
                         'courseid' => $targetcourseid]);
                     manager::queue_adhoc_task($duplicatetask);
-                    redirect($returnurl, get_string('backgroundtaskinformation', 'block_massaction'), null,
-                        notification::NOTIFY_SUCCESS);
+                    redirect(
+                        $returnurl,
+                        get_string('backgroundtaskinformation', 'block_massaction'),
+                        null,
+                        notification::NOTIFY_SUCCESS
+                    );
                 } else {
                     block_massaction\actions::duplicate_to_course($modulerecords, $targetcourseid, $targetsectionnum);
                 }
 
-                redirect($returnurl, get_string('actionexecuted', 'block_massaction'), null,
-                    notification::NOTIFY_SUCCESS);
-
+                redirect(
+                    $returnurl,
+                    get_string('actionexecuted', 'block_massaction'),
+                    null,
+                    notification::NOTIFY_SUCCESS
+                );
             } else {
                 $redirect = false;
                 actions::print_section_select_form($sectionselectform);
@@ -213,6 +227,10 @@ if ($redirect) {
     // Redirect back to the previous page.
     // If an error has occurred, the action handler functions already should have thrown an exception to the user, so if we get to
     // this point in the code, the demanded action should have been successful.
-    redirect($returnurl, get_string('actionexecuted', 'block_massaction'), null,
-        notification::NOTIFY_SUCCESS);
+    redirect(
+        $returnurl,
+        get_string('actionexecuted', 'block_massaction'),
+        null,
+        notification::NOTIFY_SUCCESS
+    );
 }

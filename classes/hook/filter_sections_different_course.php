@@ -16,8 +16,6 @@
 
 namespace block_massaction\hook;
 
-defined('MOODLE_INTERNAL') || die();
-
 #[\core\attribute\label('Hook dispatched when block_massaction is duplicating activities into another course. '
     . 'The hook provides ways to customize which sections the user can duplicate activities to.')]
 #[\core\attribute\tags('block_massaction')]
@@ -30,7 +28,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class filter_sections_different_course {
-
     use filter_sections_handler;
 
     /** @var bool Determines if the user will be able to keep the original section of a course module when performing some operations. */
