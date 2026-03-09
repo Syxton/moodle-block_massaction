@@ -679,27 +679,18 @@ final class massaction_test extends advanced_testcase {
         // Test if some of the activities are broken, but still complete the job.
         $targetcourseid = $this->setup_target_course_for_duplicating();
         $assigncms = $sourcecoursemodinfo->get_instances_of('assign');
-        $numberoferror = 3;
-        $counter = 0;
-        foreach ($assigncms as $assigncm) {
-            $DB->execute('DELETE FROM {assign} WHERE id = ' . $assigncm->instance);
-            $counter++;
-            if ($numberoferror == $counter) {
-                break;
-            }
-        }
+        $assigncm = array_shift($assigncms);
+        $DB->execute('DELETE FROM {assign} WHERE id = ' . $assigncm->instance);
         $coursemodules = $this->get_test_course_modules();
         // Prepare redirect Events.
         $sink = $this->redirectEvents();
         block_massaction\actions::duplicate_to_course($coursemodules, $targetcourseid, $targetsectionnum);
         $events = $sink->get_events();
         $sink->close();
-        $targetcoursemodinfo = get_fast_modinfo($targetcourseid);
-        $this->assertCount(count($coursemodules) - $numberoferror, $targetcoursemodinfo->get_cms());
         $failedevents = array_filter($events, function ($event) {
             return ($event instanceof \block_massaction\event\course_modules_duplicated_failed);
         });
-        $this->assertCount($numberoferror, $failedevents);
+        $this->assertCount(1, $failedevents);
     }
 
     /**

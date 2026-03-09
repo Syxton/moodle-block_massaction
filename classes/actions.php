@@ -350,9 +350,9 @@ class actions {
         // sorted by their id:
         // Let order of mods in a section be mod1, mod2, mod3, mod4, mod5. If we duplicate mod2, mod4, the order afterwards will be
         // mod1, mod2, mod3, mod4, mod5, mod2(dup), mod4(dup).
-        $duplicatedmods = [];
-        $cms = [];
         $errors = [];
+        $sourcecms = [];
+        $duplicatedmods = [];
         $filtersectionshook = new filter_sections_same_course($sourcecourseid, array_keys($sourcemodinfo->get_section_info_all()));
         \core\di::get(\core\hook\manager::class)->dispatch($filtersectionshook);
         $srcfilteredsections = $filtersectionshook->get_sectionnums();
@@ -363,28 +363,28 @@ class actions {
             if (!in_array($sourcecm->sectionnum, $srcfilteredsections)) {
                 throw new moodle_exception('sectionrestricted', 'block_massaction', '', $sourcecm->sectionnum);
             }
+            $sourcecms[] = $sourcecm;
+        }
 
-            try {
-                $duplicatedmod = massactionutils::duplicate_cm_to_course(
-                    $targetmodinfo->get_course(),
-                    $sourcemodinfo->get_cm($cmid)
-                );
-            } catch (\Exception $e) {
-                $errors[$cmid] = 'cmid:' . $cmid . '(' . $e->getMessage() . ')';
-                $event = \block_massaction\event\course_modules_duplicated_failed::create(
-                    [
-                        'context' => \context_course::instance($sourcecourseid),
-                        'other' => [
-                            'cmid' => $cmid,
-                            'error' => $errors[$cmid],
-                        ],
-                    ]
-                );
-                $event->trigger();
-                continue;
-            }
-            $cms[$cmid] = $duplicatedmod;
-            $duplicatedmods[] = $duplicatedmod;
+        try {
+            $duplicatedmods = massactionutils::duplicate_cms_to_course(
+                $targetmodinfo->get_course(),
+                $sourcecms
+            );
+        } catch (\Exception $e) {
+            $event = \block_massaction\event\course_modules_duplicated_failed::create(
+                [
+                    'context' => \context_course::instance($sourcecourseid),
+                    'other' => [
+                        'cmid' => implode(',', array_map(function ($cm) {
+                            return $cm->id;
+                        }, $sourcecms)),
+                        'error' => $e->getMessage(),
+                    ],
+                ]
+            );
+            $event->trigger();
+            $errors[] = $e->getMessage();
         }
 
         // We need to reload new course structure.
@@ -392,15 +392,15 @@ class actions {
         $targetsection = $targetmodinfo->get_section_info($sectionnum);
         if ($sectionnum != -1) {
             // A target section has been specified, so we have to move the course modules.
-            foreach ($duplicatedmods as $modid) {
+            foreach (array_values($duplicatedmods) as $modid) {
                 moveto_module($targetmodinfo->get_cm($modid), $targetsection);
             }
         }
         $event = \block_massaction\event\course_modules_duplicated::create([
             'context' => \context_course::instance($sourcecourseid),
             'other' => [
-                'cms' => $cms,
-                'failed' => array_keys($errors),
+                'cms' => $modules,
+                'failed' => $errors,
             ],
         ]);
         $event->trigger();

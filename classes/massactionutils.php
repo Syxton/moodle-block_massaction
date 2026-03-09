@@ -169,4 +169,93 @@ class massactionutils {
         }
         return $newcmid;
     }
+
+    /**
+     * Duplicate multiple course modules to a given course. This method bundles the course modules into one backup to
+     * keep dependencies between the modules.
+     *
+     * @param object $course
+     * @param array $cms array of course module objects to be duplicated
+     * @return array mapping of old cmid to new cmid
+     */
+    public static function duplicate_cms_to_course(object $course, array $cms): array {
+        global $CFG, $USER;
+        require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+        require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+        require_once($CFG->libdir . '/filelib.php');
+
+        if (empty($cms)) {
+            return [];
+        }
+
+        // Verify all modules support backup.
+        $cmids = [];
+        foreach ($cms as $cm) {
+            if (!plugin_supports('mod', $cm->modname, FEATURE_BACKUP_MOODLE2)) {
+                $a = new stdClass();
+                $a->modtype = get_string('modulename', $cm->modname);
+                $a->modname = format_string($cm->name);
+                throw new moodle_exception('duplicatenosupport', 'error', '', $a);
+            }
+            $cmids[] = $cm->id;
+        }
+
+        // Create specialized backup controller.
+        $bc = new massaction_backup_controller($USER->id, $cmids);
+
+        $backupid = $bc->get_backupid();
+        $backupbasepath = $bc->get_plan()->get_basepath();
+
+        $bc->execute_plan();
+        $bc->destroy();
+
+        // Restore the backup to the target course.
+        $rc = new massaction_restore_controller($backupid, $course->id, $USER->id);
+
+        // Make sure that the restore_general_groups setting is always enabled.
+        $plan = $rc->get_plan();
+        $groupsetting = $plan->get_setting('groups');
+        if (empty($groupsetting->get_value())) {
+            $groupsetting->set_value(true);
+        }
+
+        if (!$rc->execute_precheck()) {
+            $precheckresults = $rc->get_precheck_results();
+            if (is_array($precheckresults) && !empty($precheckresults['errors'])) {
+                if (empty($CFG->keeptempdirectoriesonbackup)) {
+                    fulldelete($backupbasepath);
+                }
+            }
+        }
+
+        $rc->execute_plan();
+
+        // Get the mapping of old cmids to new cmids.
+        $newcmids = [];
+        $tasks = $rc->get_plan()->get_tasks();
+        foreach ($tasks as $task) {
+            if (is_subclass_of($task, 'restore_activity_task')) {
+                $oldcontextid = $task->get_old_contextid();
+                $newcmid = $task->get_moduleid();
+
+                // Find which original cm matches this context.
+                foreach ($cms as $cm) {
+                    $cmcontext = context_module::instance($cm->id);
+                    if ($cmcontext->id == $oldcontextid) {
+                        $newcmids[$cm->id] = $newcmid;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $rc->destroy();
+
+        // Clean up the backup files if needed.
+        if (empty($CFG->keeptempdirectoriesonbackup)) {
+            fulldelete($backupbasepath);
+        }
+
+        return $newcmids;
+    }
 }
