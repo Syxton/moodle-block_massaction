@@ -27,6 +27,7 @@ use context_course;
 use core\event\course_module_updated;
 use core\task\manager;
 use core_course\task\content_notification_task;
+use core_courseformat\formatactions;
 use dml_exception;
 use moodle_exception;
 use require_login_exception;
@@ -174,7 +175,7 @@ class actions {
             }
 
             try {
-                $duplicatedmod = duplicate_module($modinfo->get_course(), $modinfo->get_cm($cmid));
+                $duplicatedmod = formatactions::cm($courseid)->duplicate($cmid);
             } catch (\Exception $e) {
                 $errors[$cmid] = 'cmid:' . $cmid . '(' . $e->getMessage() . ')';
                 $event = \block_massaction\event\course_modules_duplicated_failed::create([
@@ -204,7 +205,7 @@ class actions {
             }
 
             // Move each module to the end of their section.
-            moveto_module($duplicatedmod, $section);
+            formatactions::cm($courseid)->move_end_section($duplicatedmod->id, $section->id);
         }
         $event = \block_massaction\event\course_modules_duplicated::create([
             'context' => \context_course::instance($courseid),
@@ -393,7 +394,7 @@ class actions {
         if ($sectionnum != -1) {
             // A target section has been specified, so we have to move the course modules.
             foreach ($duplicatedmods as $modid) {
-                moveto_module($targetmodinfo->get_cm($modid), $targetsection);
+                formatactions::cm($targetcourseid)->move_end_section($modid, $targetsection->id);
             }
         }
         $event = \block_massaction\event\course_modules_duplicated::create([
@@ -526,8 +527,7 @@ class actions {
      * @throws moodle_exception
      */
     public static function perform_deletion(array $modules): void {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/course/lib.php');
+        global $DB;
 
         foreach ($modules as $cm) {
             if (!$cm = get_coursemodule_from_id('', $cm->id, 0, true)) {
@@ -538,15 +538,7 @@ class actions {
                 throw new moodle_exception('invalidcourseid');
             }
 
-            $modlib = $CFG->dirroot . '/mod/' . $cm->modname . '/lib.php';
-
-            if (file_exists($modlib)) {
-                require_once($modlib);
-            } else {
-                new moodle_exception('modulemissingcode', '', '', $modlib);
-            }
-
-            course_delete_module($cm->id, true);
+            formatactions::cm($cm->course)->delete($cm->id, true);
         }
     }
 
@@ -663,7 +655,7 @@ class actions {
             }
 
             // Move each module to the end of their section.
-            moveto_module($cm, $section);
+            formatactions::cm($cm->course)->move_end_section($cm->id, $section->id);
         }
     }
 

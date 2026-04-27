@@ -24,6 +24,7 @@ use block_massaction\hook\filter_sections_different_course;
 use coding_exception;
 use core\event\course_module_updated;
 use core\task\manager;
+use core_courseformat\formatactions;
 use dml_exception;
 use moodle_exception;
 use require_login_exception;
@@ -389,7 +390,8 @@ final class massaction_test extends advanced_testcase {
         $this->assertEquals(1, $module->visibleoncoursepage); // Visible on course page in a visible section.
 
         // Hide section.
-        set_section_visible($this->course->id, $module->sectionnum, 0);
+        $sectioninfo = get_fast_modinfo($this->course)->get_section_info($module->sectionnum);
+        formatactions::section($this->course->id)->set_visibility($sectioninfo, false);
         $module = get_fast_modinfo($this->course)->get_cm($moduleid);
         // After section has been hidden the course module should also be hidden.
         $this->assertEquals(0, $module->visible); // Hidden in a hidden section.
@@ -421,7 +423,8 @@ final class massaction_test extends advanced_testcase {
 
         // Just to doublecheck that a visible section behaves differently.
         // Available modules in visible sections are not visible on course page.
-        set_section_visible($this->course->id, $module->sectionnum, 1);
+        $sectioninfo = get_fast_modinfo($this->course)->get_section_info($module->sectionnum);
+        formatactions::section($this->course->id)->set_visibility($sectioninfo, true);
         actions::set_visibility([$module], true, false);
         $module = get_fast_modinfo($this->course)->get_cm($moduleid);
         $this->assertEquals(1, $module->visible);
@@ -887,21 +890,25 @@ final class massaction_test extends advanced_testcase {
         // Reason: We want to see if the order in the section is preserved which usually is different from the module ids.
         // The method to be tested should follow the sections order. To be able to see the correct effect we have to ensure that
         // the order of moduleids isn't the same as the order in the section.
-        moveto_module(
-            get_fast_modinfo($this->course->id)->get_cm(get_fast_modinfo($this->course->id)->get_sections()[1][0]),
-            get_fast_modinfo($this->course->id)->get_section_info(1)
+        $modinfo = get_fast_modinfo($this->course->id);
+        formatactions::cm($this->course->id)->move_end_section(
+            $modinfo->get_sections()[1][0],
+            $modinfo->get_section_info(1)->id
         );
-        moveto_module(
-            get_fast_modinfo($this->course->id)->get_cm(get_fast_modinfo($this->course->id)->get_sections()[1][3]),
-            get_fast_modinfo($this->course->id)->get_section_info(1)
+        $modinfo = get_fast_modinfo($this->course->id);
+        formatactions::cm($this->course->id)->move_end_section(
+            $modinfo->get_sections()[1][3],
+            $modinfo->get_section_info(1)->id
         );
-        moveto_module(
-            get_fast_modinfo($this->course->id)->get_cm(get_fast_modinfo($this->course->id)->get_sections()[3][0]),
-            get_fast_modinfo($this->course->id)->get_section_info(3)
+        $modinfo = get_fast_modinfo($this->course->id);
+        formatactions::cm($this->course->id)->move_end_section(
+            $modinfo->get_sections()[3][0],
+            $modinfo->get_section_info(3)->id
         );
-        moveto_module(
-            get_fast_modinfo($this->course->id)->get_cm(get_fast_modinfo($this->course->id)->get_sections()[3][3]),
-            get_fast_modinfo($this->course->id)->get_section_info(3)
+        $modinfo = get_fast_modinfo($this->course->id);
+        formatactions::cm($this->course->id)->move_end_section(
+            $modinfo->get_sections()[3][3],
+            $modinfo->get_section_info(3)->id
         );
     }
 

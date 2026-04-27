@@ -78,9 +78,9 @@ class massactionutils {
     /**
      * This duplicates a course module to a *different* course.
      *
-     * This function is mainly copied from 'duplicate_module' from /course/lib.php. Unfortunately, it seems that this function
-     * was once intended to also be able to duplicate a module to another course, but mid-function it started to be specific to
-     * the course the source module is part of.
+     * This function is mainly copied from 'duplicate_module' from /course/lib.php which since Moodle 5.2 has moved
+     * to cmactions::duplicate. Unfortunately, it seems that this function was once intended to also be able to duplicate
+     * a module to another course, but mid-function it started to be specific to the course the source module is part of.
      *
      * @param object $course course object.
      * @param object $cm course module object to be duplicated.
