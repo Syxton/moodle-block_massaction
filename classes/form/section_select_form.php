@@ -117,7 +117,7 @@ class section_select_form extends moodleform {
 
         // Find maximum section that may need to be created.
         $massactionrequest = $this->_customdata['request'];
-        $data = \block_massaction\massactionutils::extract_modules_from_json($massactionrequest);
+        $data = \block_massaction\massactionutils::extract_modules_from_json($massactionrequest, $sourcecourseid);
         $modules = $data->modulerecords;
         $srcmaxsectionnum = max(array_map(function ($mod) use ($sourcecoursemodinfo) {
             return $sourcecoursemodinfo->get_cm($mod->id)->sectionnum;

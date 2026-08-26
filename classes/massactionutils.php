@@ -42,11 +42,12 @@ class massactionutils {
      *
      * @param string $massactionrequest the json string containing the module ids to be handled as well as the action
      *  which should be applied to them
+     * @param int $courseid The course id. This is used to verify that the modules do belong to the course.
      * @return stdClass the data structure converted from the json
      * @throws dml_exception if the database lookup fails
-     * @throws moodle_exception if the json is of a wrong format
+     * @throws moodle_exception if the json is of a wrong format, or a module does not belong to $courseid
      */
-    public static function extract_modules_from_json(string $massactionrequest): stdClass {
+    public static function extract_modules_from_json(string $massactionrequest, int $courseid): stdClass {
         global $DB;
         // Parse the submitted data.
         $data = json_decode($massactionrequest);
@@ -56,10 +57,12 @@ class massactionutils {
             throw new moodle_exception('jsonerror', 'block_massaction');
         }
 
+        // Restrict the lookup to the authorised course, so module ids belonging to other courses can never be
+        // resolved (and therefore never acted upon) via this request, regardless of what the caller sent.
         $modulerecords = $DB->get_records_select(
             'course_modules',
-            'id IN (' . implode(',', array_fill(0, count($data->moduleIds), '?')) . ')',
-            $data->moduleIds
+            'course = ? AND id IN (' . implode(',', array_fill(0, count($data->moduleIds), '?')) . ')',
+            array_merge([$courseid], $data->moduleIds)
         );
 
         foreach ($data->moduleIds as $modid) {
