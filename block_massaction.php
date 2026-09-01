@@ -201,6 +201,7 @@ class block_massaction extends block_base {
                     ),
                     'sectionselecthelpicon' => $OUTPUT->help_icon('sectionselect', 'block_massaction'),
                     'availabletargetsections' => implode(',', $sectionsavailable),
+                    'sesskey' => sesskey(),
                 ]
             );
         }

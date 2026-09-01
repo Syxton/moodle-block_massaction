@@ -90,11 +90,11 @@ final class massaction_test extends advanced_testcase {
     public function test_extract_modules_from_json(): void {
         // Negative tests.
         $this->expectException(moodle_exception::class);
-        block_massaction\massactionutils::extract_modules_from_json('{}');
+        block_massaction\massactionutils::extract_modules_from_json('{}', $this->course->id);
         $this->expectException(moodle_exception::class);
-        block_massaction\massactionutils::extract_modules_from_json('');
+        block_massaction\massactionutils::extract_modules_from_json('', $this->course->id);
         $this->expectException(moodle_exception::class);
-        block_massaction\massactionutils::extract_modules_from_json('{[]}');
+        block_massaction\massactionutils::extract_modules_from_json('{[]}', $this->course->id);
 
         // Positive tests.
         $modulerecords = $this->get_test_course_modules();
@@ -111,7 +111,7 @@ final class massaction_test extends advanced_testcase {
         }
         $jsonstring = substr($jsonstring, 0, -1);
         $jsonstring .= ']}';
-        $data = block_massaction\massactionutils::extract_modules_from_json($jsonstring);
+        $data = block_massaction\massactionutils::extract_modules_from_json($jsonstring, $this->course->id);
         foreach ($selectedmodules as $module) {
             $this->assertTrue(in_array($module, $data->moduleIds));
             $this->assertTrue(in_array($module, array_keys($data->modulerecords)));
@@ -122,6 +122,33 @@ final class massaction_test extends advanced_testcase {
         foreach (array_keys($data->modulerecords) as $modid) {
             $this->assertTrue(in_array($modid, $selectedmodules));
         }
+    }
+
+    /**
+     * Tests that a module id from another course is rejected.
+     *
+     * @covers \block_massaction\massactionutils::extract_modules_from_json
+     * @return void
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    public function test_extract_modules_from_json_rejects_foreign_course_module(): void {
+        $generator = $this->getDataGenerator();
+        $othercourse = $generator->create_course();
+        $foreignmodule = $generator->create_module('assign', ['course' => $othercourse->id]);
+
+        // A module id that genuinely belongs to $this->course must still be accepted.
+        $coursemodules = $this->get_test_course_modules();
+        $ownmodule = reset($coursemodules);
+        $jsonstring = json_encode(['action' => 'hide', 'moduleIds' => [(int) $ownmodule->id]]);
+        $data = block_massaction\massactionutils::extract_modules_from_json($jsonstring, $this->course->id);
+        $this->assertArrayHasKey($ownmodule->id, $data->modulerecords);
+
+        // A module id belonging to a different course must be rejected when checked against $this->course->id, even
+        // though the module id genuinely exists in the database.
+        $this->expectException(moodle_exception::class);
+        $jsonstring = json_encode(['action' => 'hide', 'moduleIds' => [(int) $foreignmodule->cmid]]);
+        block_massaction\massactionutils::extract_modules_from_json($jsonstring, $this->course->id);
     }
 
     /**
