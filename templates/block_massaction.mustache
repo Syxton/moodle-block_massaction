@@ -33,7 +33,8 @@
         "instanceid": "1",
         "requesturl": "doSomething.php",
         "helpicon": "help.gif",
-        "availabletargetsections": "1,3,5"
+        "availabletargetsections": "1,3,5",
+        "sesskey": "abcdef1234"
     }
 }}
 <div id="block-massaction-bulk-editing-disabled">
@@ -118,6 +119,7 @@
         <input type="hidden" id="block-massaction-control-request" name="request" value="">
         <input type="hidden" id="block-massaction-instance_id" name="instance_id" value="{{instanceid}}">
         <input type="hidden" id="block-massaction-return_url" name="return_url" value="{{requesturi}}">
+        <input type="hidden" id="block-massaction-sesskey" name="sesskey" value="{{sesskey}}">
     </form>
     <div id="block-massaction-help-icon">{{{helpicon}}}</div>
     <input type="hidden" data-block-massaction-data="availabletargetsections" data-availabletargetsections="{{availabletargetsections}}"/>
