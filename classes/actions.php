@@ -482,6 +482,7 @@ class actions {
             'return_url' => $returnurl,
             'request' => $massactionrequest,
             'del_confirm' => 1,
+            'sesskey' => sesskey(),
         ];
         $optionsoncancel = ['id' => $cm->course];
 
