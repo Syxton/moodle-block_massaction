@@ -195,7 +195,9 @@ class block_massaction extends block_base {
                                                 has_capability('block/massaction:movetosection', $context)),
                   'sectionselecthelpicon' => $OUTPUT->help_icon('sectionselect', 'block_massaction'),
                     'availabletargetsections' => implode(',', $sectionsavailable),
-                ]);
+                    'sesskey' => sesskey(),
+                ]
+            );
         }
         return $this->content;
     }
