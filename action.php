@@ -32,19 +32,22 @@ require('../../config.php');
 
 $instanceid = required_param('instance_id', PARAM_INT);
 $massactionrequest = required_param('request', PARAM_TEXT);
-$returnurl = required_param('return_url', PARAM_TEXT);
+$returnurl = required_param('return_url', PARAM_LOCALURL);
 $deletionconfirmed = optional_param('del_confirm', 0, PARAM_BOOL);
 
 require_login();
+require_sesskey();
 
 // Check capability.
 $blockcontext = context_block::instance($instanceid);
 require_capability('block/massaction:use', $blockcontext);
 
-$data = block_massaction\massactionutils::extract_modules_from_json($massactionrequest);
+$context = $blockcontext->get_course_context();
+
+// Resolve modules only within this block's course to prevent cross-course module ID tampering.
+$data = block_massaction\massactionutils::extract_modules_from_json($massactionrequest, $context->instanceid);
 $modulerecords = $data->modulerecords;
 
-$context = $blockcontext->get_course_context();
 // Dispatch the submitted action.
 
 // Redirect to course by default.
