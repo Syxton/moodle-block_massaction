@@ -29,9 +29,8 @@ defined('MOODLE_INTERNAL') || die();
  * @package    block_massaction
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class filter_sections_same_course {
-
+class filter_sections_same_course
+{
     // We use the trait here, because inheritance is not recommended for hooks.
     use filter_sections_handler;
-
 }

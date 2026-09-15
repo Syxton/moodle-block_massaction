@@ -33,8 +33,8 @@ require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class behat_massaction extends behat_base {
-
+class behat_massaction extends behat_base
+{
     /**
      * Checks that a given course format is installed.
      *
@@ -45,7 +45,7 @@ class behat_massaction extends behat_base {
     public function i_installed_course_format($formatname) {
         $formatplugins = core_plugin_manager::instance()->get_plugins_of_type('format');
         if (!isset($formatplugins[$formatname])) {
-            throw new \Moodle\BehatExtension\Exception\SkippedException;
+            throw new \Moodle\BehatExtension\Exception\SkippedException();
         }
     }
 }

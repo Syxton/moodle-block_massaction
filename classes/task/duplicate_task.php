@@ -38,8 +38,8 @@ use restore_controller_exception;
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class duplicate_task extends adhoc_task {
-
+class duplicate_task extends adhoc_task
+{
     /**
      * Executes the duplication of multiple course modules.
      *

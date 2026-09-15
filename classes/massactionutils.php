@@ -44,8 +44,8 @@ use stdClass;
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class massactionutils {
-
+class massactionutils
+{
     /**
      * Method to extract the modules from the request JSON which is sent by the block_massaction JS module to the backend.
      *
@@ -119,8 +119,14 @@ class massactionutils {
 
         // Backup the activity.
 
-        $bc = new backup_controller(backup::TYPE_1ACTIVITY, $cm->id, backup::FORMAT_MOODLE,
-            backup::INTERACTIVE_NO, backup::MODE_IMPORT, $USER->id);
+        $bc = new backup_controller(
+            backup::TYPE_1ACTIVITY,
+            $cm->id,
+            backup::FORMAT_MOODLE,
+            backup::INTERACTIVE_NO,
+            backup::MODE_IMPORT,
+            $USER->id
+        );
 
         $backupid = $bc->get_backupid();
         $backupbasepath = $bc->get_plan()->get_basepath();
@@ -130,8 +136,14 @@ class massactionutils {
         $bc->destroy();
 
         // Restore the backup immediately.
-        $rc = new restore_controller($backupid, $course->id,
-            backup::INTERACTIVE_NO, backup::MODE_IMPORT, $USER->id, backup::TARGET_CURRENT_ADDING);
+        $rc = new restore_controller(
+            $backupid,
+            $course->id,
+            backup::INTERACTIVE_NO,
+            backup::MODE_IMPORT,
+            $USER->id,
+            backup::TARGET_CURRENT_ADDING
+        );
 
         // Make sure that the restore_general_groups setting is always enabled when duplicating an activity.
         $plan = $rc->get_plan();

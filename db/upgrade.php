@@ -33,7 +33,6 @@
  * @throws upgrade_exception
  */
 function xmldb_block_massaction_upgrade($oldversion, $block): bool {
-
     if ($oldversion < 2022000000) { // Stand-in function.
         upgrade_block_savepoint(true, 2022000000, 'massaction', false);
     }
@@ -56,7 +55,6 @@ function xmldb_block_massaction_upgrade($oldversion, $block): bool {
  * @throws dml_exception
  */
 function block_massaction_add_supported_format(string $addformat): void {
-
     // Get current settings to update.
     $selectedformats = get_config('block_massaction', 'applicablecourseformats');
     $selectedformats = explode(',', $selectedformats);
@@ -70,9 +68,10 @@ function block_massaction_add_supported_format(string $addformat): void {
 
     $supportedformats = [];
     foreach ($plugins as $format => $name) {
-        if (isset($name) &&
-            (in_array($format, $selectedformats) ||
-                $format === $addformat)) {
+        if (
+            isset($name)
+            && (in_array($format, $selectedformats) || $format === $addformat)
+        ) {
             $supportedformats[$format] = 1;
         }
     }
@@ -89,7 +88,6 @@ function block_massaction_add_supported_format(string $addformat): void {
  * @throws dml_exception
  */
 function block_massaction_remove_supported_format(string $removeformat): void {
-
     // Get current settings to update.
     $selectedformats = get_config('block_massaction', 'applicablecourseformats');
     $selectedformats = explode(',', $selectedformats);
@@ -103,9 +101,11 @@ function block_massaction_remove_supported_format(string $removeformat): void {
 
     $supportedformats = [];
     foreach ($plugins as $format => $name) {
-        if (isset($name) &&
-            in_array($format, $selectedformats) &&
-            $format !== $removeformat) {
+        if (
+            isset($name)
+            && in_array($format, $selectedformats)
+            && $format !== $removeformat
+        ) {
             $supportedformats[$format] = 1;
         }
     }

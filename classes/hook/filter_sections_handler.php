@@ -26,10 +26,16 @@ use coding_exception;
  * @package    block_massaction
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-trait filter_sections_handler {
-
-    /** @var array Array of section numbers which originally are available for block_massaction. */
+trait filter_sections_handler
+{
+    /** @var array Original section numbers before hook filtering. */
     private readonly array $originalsectionnums;
+
+    /** @var int Course ID for the sections. */
+    private readonly int $courseid;
+
+    /** @var array Currently available section numbers. */
+    private array $sectionnums;
 
     /**
      * Creates the hook object.
@@ -38,9 +44,11 @@ trait filter_sections_handler {
      * @param array $sectionnums the section numbers which are available (so the available sections the hook listeners may filter)
      */
     public function __construct(
-            private readonly int $courseid,
-            private array $sectionnums
+        int $courseid,
+        array $sectionnums
     ) {
+        $this->courseid = $courseid;
+        $this->sectionnums = $sectionnums;
         $this->originalsectionnums = $this->sectionnums;
     }
 

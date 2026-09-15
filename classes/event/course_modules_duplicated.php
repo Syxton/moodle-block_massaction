@@ -27,8 +27,8 @@ use core\event\base;
  * @copyright   2023 Catalyst IT
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class course_modules_duplicated extends base {
-
+class course_modules_duplicated extends base
+{
     /**
      * Initialise required event data properties.
      */
@@ -55,28 +55,36 @@ class course_modules_duplicated extends base {
         $cms = [];
         $failed = [];
         foreach ($this->other['cms'] as $srccm => $dstcm) {
-            $cms[] = get_string('event:duplicated_description',
-                                'block_massaction',
-                                ['src' => $srccm,
+            $cms[] = get_string(
+                'event:duplicated_description',
+                'block_massaction',
+                ['src' => $srccm,
                                  'dst' => $dstcm,
-                                ]);
+                                ]
+            );
         }
 
         foreach ($this->other['failed'] as $cmid) {
             $failed[] = 'cmid \'' . $cmid . '\'';
         }
 
-        return get_string('event:duplicated_summary',
-                          'block_massaction',
-                          ['countcomplete' => count($cms),
+        return get_string(
+            'event:duplicated_summary',
+            'block_massaction',
+            ['countcomplete' => count($cms),
                            'countfailed' => count($failed),
-                          ]) .
-               ($cms ? get_string('event:duplicated_completed_list',
-                                  'block_massaction',
-                                  ['list' => implode(', ', $cms)]) : '') .
-               ($failed ? get_string('event:duplicated_failed_list',
-                                     'block_massaction',
-                                     ['list' => implode(', ', $failed)]) : '');
+                          ]
+        ) .
+               ($cms ? get_string(
+                   'event:duplicated_completed_list',
+                   'block_massaction',
+                   ['list' => implode(', ', $cms)]
+               ) : '') .
+               ($failed ? get_string(
+                   'event:duplicated_failed_list',
+                   'block_massaction',
+                   ['list' => implode(', ', $failed)]
+               ) : '');
     }
 
     /**
