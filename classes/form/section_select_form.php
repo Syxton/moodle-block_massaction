@@ -93,12 +93,13 @@ class section_select_form extends moodleform {
         }
 
         // We create an array with the sections. If a section does not have a name, we name it 'Section $sectionnumber'.
-        $targetsections = array_map(function ($section) {
+        $targetcontext = \context_course::instance($targetcourseid);
+        $targetsections = array_map(function ($section) use ($targetcontext) {
             $name = $section->name;
             if (empty($section->name)) {
                 $name = get_string('section') . ' ' . $section->section;
             }
-            return $name;
+            return format_string($name, true, ['context' => $targetcontext]);
         }, $targetcoursemodinfo->get_section_info_all());
 
         // Trims off any possible orphaned sections.
