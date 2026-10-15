@@ -33,9 +33,6 @@ use moodleform;
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
-require_once('../../config.php');
-
-require_login();
 
 /**
  * A form to select the target section to restore multiple course modules to.
