@@ -45,6 +45,8 @@ final class section_select_form_test extends \advanced_testcase {
                 'sectionname' => '<img src=x onerror=alert(document.cookie)>Topic A',
                 'expected' => 'Topic A',
             ],
+            'name_zero' => ['sectionname' => '0', 'expected' => '0'],
+            'empty_name' => ['sectionname' => '', 'expected' => null],
         ];
     }
 

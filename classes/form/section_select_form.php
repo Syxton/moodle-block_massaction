@@ -96,7 +96,7 @@ class section_select_form extends moodleform {
         $targetcontext = \context_course::instance($targetcourseid);
         $targetsections = array_map(function ($section) use ($targetcontext) {
             $name = $section->name;
-            if (empty($section->name)) {
+            if ((string) $section->name === '') {
                 $name = get_string('section') . ' ' . $section->section;
             }
             return format_string($name, true, ['context' => $targetcontext]);
