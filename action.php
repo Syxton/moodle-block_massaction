@@ -140,6 +140,7 @@ switch ($data->action) {
         }
         require_capability('moodle/backup:backuptargetimport', $context);
         require_capability('moodle/restore:restoretargetimport', $context);
+        require_capability('block/massaction:duplicate', $blockcontext);
         require_capability('block/massaction:movetosection', $blockcontext);
         if (get_config('block_massaction', 'duplicatemaxactivities') < count($modulerecords)) {
             $duplicatetask = new duplicate_task();

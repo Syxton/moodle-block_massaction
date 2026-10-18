@@ -197,6 +197,7 @@ class block_massaction extends block_base {
                     'show_duplicateto_select' => (
                         has_capability('moodle/backup:backuptargetimport', $context) &&
                         has_capability('moodle/restore:restoretargetimport', $context) &&
+                        has_capability('block/massaction:duplicate', $blockcontext) &&
                         has_capability('block/massaction:movetosection', $context)
                     ),
                     'sectionselecthelpicon' => $OUTPUT->help_icon('sectionselect', 'block_massaction'),
