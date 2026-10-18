@@ -223,3 +223,23 @@ Feature: Check if all the different type of actions of the mass actions block wo
     And I click on "Outdent (move left)" "button" in the "Mass Actions" "block"
     Then "#section-1 li.modtype_page.indented" "css_element" should not exist
     Then "#section-4 li.modtype_assign.indented" "css_element" should not exist
+
+  @javascript
+  Scenario: Check if 'select all' and 'deselect all' work
+    When I click on "Select all" "button" in the "Mass Actions" "block"
+    Then the field "Test Activity1" matches value "1"
+    And the field "Test Activity5" matches value "1"
+    And I should see "5 selected" in the "sticky-footer" "region"
+    When I click on "Test Activity2" "checkbox"
+    Then the field "Test Activity2" matches value ""
+    And the field "Test Activity1" matches value "1"
+    And I should see "4 selected" in the "sticky-footer" "region"
+    When I click on "Deselect all" "button" in the "Mass Actions" "block"
+    Then the field "Test Activity1" matches value ""
+    And the field "Test Activity5" matches value ""
+    And I should see "0 selected" in the "sticky-footer" "region"
+    When I set the field "block-massaction-control-section-list-select" to "4"
+    Then the field "Test Activity4" matches value "1"
+    And the field "Test Activity5" matches value "1"
+    And the field "Test Activity1" matches value ""
+    And I should see "2 selected" in the "sticky-footer" "region"
