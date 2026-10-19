@@ -202,6 +202,15 @@ Feature: Check if all the different type of actions of the mass actions block wo
     And I should see "Test Activity5 (copy)" in the "#section-3" "css_element"
 
   @javascript
+  Scenario: Check that mass action 'duplicate to section' is not offered without the duplicate capability
+    Given the following "permission overrides" exist:
+      | capability                 | permission | role           | contextlevel | reference |
+      | block/massaction:duplicate | Prevent    | editingteacher | Course       | TC        |
+    When I reload the page
+    Then "target_section_moving" "field" should exist in the "Mass Actions" "block"
+    And "target_section_duplicating" "field" should not exist in the "Mass Actions" "block"
+
+  @javascript
   Scenario: Check if mass actions 'indent' and 'outdent' work
     When I click on "Test Activity2" "checkbox"
     And I click on "Test Activity5" "checkbox"
